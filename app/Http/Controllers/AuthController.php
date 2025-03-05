@@ -10,7 +10,7 @@ class AuthController extends Controller {
     public function register(Request $request) {
         $request->validate([
             'name' => 'required|string|max:255',
-            'type_document' => 'required|string|in:DNI,Pasaporte',
+            'type_document' => 'required|string|in:PPT, PEP, CC, TI, Pasaporte',
             'document' => 'required|numeric|unique:users,document',
             'email' => 'nullable|email|unique:users,email',
         ]);
