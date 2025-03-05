@@ -8,20 +8,40 @@ use App\Models\User;
 class AuthController extends Controller {
     // Registro de usuario
     public function register(Request $request) {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'type_document' => 'required|string|in:PPT, PEP, CC, TI, Pasaporte',
-            'document' => 'required|numeric|unique:users,document',
-            'email' => 'nullable|email|unique:users,email',
-        ]);
-
-        $user = User::create($request->all());
-
-        return response()->json([
-            'message' => 'Usuario registrado correctamente',
-            'user' => $user
-        ], 201);
+        try {
+            $user = User::create([
+                'name' => $request->name,
+                'type_document' => $request->type_document,
+                'document' => $request->document,
+                'email' => $request->email
+            ]);
+    
+            return response()->json([
+                'message' => 'Usuario registrado correctamente',
+                'user' => $user
+            ], 201);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'No se pudo registrar el usuario'
+            ], 500);
+        }
     }
+
+    //public function register(Request $request) {
+        //$request->validate([
+            //'name' => 'required|string|max:255',
+            //'type_document' => 'required|string|in:PPT, PEP, CC, TI, Pasaporte',
+            //'document' => 'required|numeric|unique:users,document',
+          //  'email' => 'nullable|email|unique:users,email',
+        //]);
+
+        //$user = User::create($request->all());
+
+        //return response()->json([
+          //  'message' => 'Usuario registrado correctamente',
+        //    'user' => $user
+      //  ], 201);
+    //}
 
     // Inicio de sesión (sin contraseña)
     public function login(Request $request)
