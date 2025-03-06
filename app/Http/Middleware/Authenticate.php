@@ -9,12 +9,17 @@ use Symfony\Component\HttpFoundation\Response;
 class Authenticate
 {
     /**
-     * Handle an incoming request.
+     * Maneja una solicitud entrante.
      *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
+     * @param  \Illuminate\Http\Request  $request  La solicitud HTTP entrante.
+     * @param  \Closure  $next  La siguiente acción a ejecutar en la cadena de middleware.
+     * @return \Symfony\Component\HttpFoundation\Response  Respuesta HTTP.
      */
     public function handle(Request $request, Closure $next): Response
     {
+        // Aquí se podría agregar lógica para verificar si el usuario está autenticado
+        // Actualmente, solo deja pasar la solicitud sin restricciones.
+        
         return $next($request);
     }
 }
