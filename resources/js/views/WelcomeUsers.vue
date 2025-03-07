@@ -1,0 +1,213 @@
+<!--<script setup>
+import { defineProps } from 'vue';
+
+const props = defineProps(['name']);
+</script>
+
+<template>
+  <div class="container">
+    <h1>Bienvenido, {{ props.name }}!</h1>
+    <p>"El éxito no es definitivo, el fracaso no es fatal: lo que cuenta es el coraje de seguir adelante."</p>
+    <p>"Cada día es una nueva oportunidad para cambiar tu vida."</p>
+    <p>"No cuentes los días, haz que los días cuenten."</p>
+    <p>"El único límite a tu éxito es tu propia mentalidad."</p>
+  </div>
+</template>
+
+<style scoped>
+.container {
+  background-color: #f8f9fa;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 20px;
+}
+</style>  -->
+
+
+
+
+<!--<template>
+  <div class="welcome-container">
+    <h1>Bienvenido, {{ user.name }}!</h1>
+    <p>El éxito es la suma de pequeños esfuerzos repetidos día tras día.</p>
+    <p>No importa cuán lento vayas, siempre y cuando no te detengas.</p>
+    <p>Los sueños no funcionan a menos que tú trabajes por ellos.</p>
+    <p>La disciplina es el puente entre metas y logros.</p>
+  </div>
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+      user: {}
+    };
+  },
+  created() {
+    // Obtener usuario desde localStorage
+    this.user = JSON.parse(localStorage.getItem('user')) || { name: '{id}' };
+  }
+};
+</script>-->
+
+<!--<template>
+   Contenedor principal con una clase para aplicar estilos 
+  <div class="welcome-container">
+     Mensaje de bienvenida con el nombre del usuario 
+    <h1>Bienvenido, {{ user.name }}!</h1>
+     Frases motivacionales 
+    <p>El éxito es la suma de pequeños esfuerzos repetidos día tras día.</p>
+    <p>No importa cuán lento vayas, siempre y cuando no te detengas.</p>
+    <p>Los sueños no funcionan a menos que tú trabajes por ellos.</p>
+    <p>La disciplina es el puente entre metas y logros.</p>
+  </div>
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+      // Definimos el usuario con un nombre por defecto
+      user: { name: "Usuario" } 
+    };
+  },
+  created() {
+    // Al crearse el componente, intenta obtener el usuario desde localStorage
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      // Si hay datos en localStorage, los parseamos y asignamos al usuario
+      this.user = JSON.parse(storedUser);
+    }
+  }
+};
+</script>
+
+<style scoped>
+/* Estilos aplicados solo a este componente */
+.welcome-container {
+  text-align: center; /* Centra el contenido */
+  padding: 50px; /* Espaciado alrededor del contenido */
+}
+</style>  -->
+
+
+<!--<template>
+  <BackgroundImage :tipo="tipoSeleccionado">
+    <NavegaBarra @menu-seleccionado="accionMenu" />
+    <SidebarLateral @icono-seleccionado="mostrarInformacion" />
+    <ToggleSwitchMc @toggle-cambiado="cambiarTipo" />
+    
+    <div class="contenido">
+      <h1>Bienvenido, Usuario</h1>
+      <p>{{ informacion }}</p>
+    </div>
+  </BackgroundImage>
+</template>
+
+<script>
+import { defineComponent, ref } from "vue";
+import BackgroundImage from "@/components/BackgroundImage.vue";
+import NavegaBarra from "@/components/NavegaBarra.vue";
+import SidebarLateral from "@/components/SidebarLateral.vue";
+import ToggleSwitchMc from "@/components/ToggleSwitchMc.vue";
+
+export default defineComponent({
+  components: {
+    BackgroundImage,
+    NavegaBarra,
+    SidebarLateral,
+    ToggleSwitchMc,
+  },
+  setup() {
+    const tipoSeleccionado = ref("Mora");
+    const informacion = ref("Seleccione una opción");
+
+    const cambiarTipo = (nuevoTipo) => {
+      tipoSeleccionado.value = nuevoTipo;
+      informacion.value = `Vista de ${nuevoTipo}`;
+    };
+
+    const mostrarInformacion = (info) => {
+      informacion.value = info;
+    };
+
+    return { tipoSeleccionado, informacion, cambiarTipo, mostrarInformacion };
+  },
+});
+</script>
+
+<style scoped>
+.contenido {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(255, 255, 255, 0.8);
+  padding: 20px;
+  border-radius: 10px;
+  text-align: center;
+}
+</style>  -->
+
+
+<template>
+  <BackgroundImage :tipo="tipoSeleccionado">
+    <NavegaBarra @menu-seleccionado="accionMenu" />
+    <SidebarLateral @icon-clicked="mostrarInformacion" />  <!-- Se alineó el evento -->
+    <ToggleSwitchMc @toggle-cambiado="cambiarTipo" />
+    
+    <div class="contenido">
+      <h1>Bienvenido, {{ nombre }}</h1>
+      <p>{{ informacion }}</p>
+    </div>
+  </BackgroundImage>
+</template>
+
+<script setup>
+import { ref } from "vue";
+import { useToggleStore } from "@/store/toggleStore";
+import { storeToRefs } from "pinia";
+import BackgroundImage from "@/components/BackgroundImage.vue";
+import NavegaBarra from "@/components/NavegaBarra.vue";
+import SidebarLateral from "@/components/SidebarLateral.vue";
+import ToggleSwitchMc from "@/components/ToggleSwitchMc.vue";
+
+const toggleStore = useToggleStore();
+const { nombre, tipoSeleccionado } = storeToRefs(toggleStore);
+const informacion = ref("Seleccione una opción");
+
+// Evento cuando se selecciona una opción del menú
+const accionMenu = (opcion) => {
+  console.log("Menú seleccionado:", opcion);
+  informacion.value = `Seleccionaste: ${opcion}`;
+};
+
+// Evento para cambiar entre Mora y Café
+const cambiarTipo = () => {
+  toggleStore.toggle(); // Cambia entre Mora y Café
+  informacion.value = `Vista de ${tipoSeleccionado.value}`;
+};
+
+// Evento para capturar clics en los iconos de la barra lateral
+const mostrarInformacion = (info) => {
+  console.log("Icono seleccionado:", info); // Verifica en consola si el evento se emite
+  informacion.value = info;
+};
+</script>
+
+<style scoped>
+.contenido {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(255, 255, 255, 0.8);
+  padding: 20px;
+  border-radius: 10px;
+  text-align: center;
+}
+</style>
