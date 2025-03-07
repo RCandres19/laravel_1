@@ -1,60 +1,60 @@
 <template>
   <div class="sidebar">
-    <button v-for="(icono, index) in iconos" :key="index" @click="emitirEvento(icono.texto)">
-      <font-awesome-icon :icon="icono.icon" class="icon" />
-    </button>
+    <ul>
+      <li v-for="(item, index) in iconos" :key="index" @click="irAPagina(item)">
+        <font-awesome-icon :icon="item.icon" />
+        <span>{{ item.texto }}</span>
+      </li>
+    </ul>
   </div>
 </template>
 
 <script>
-import { defineComponent } from "vue";
-import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-import { faSeedling, faNewspaper, faSun, faTag, faHouseChimney } from "@fortawesome/free-solid-svg-icons";
+import { useRouter } from 'vue-router';
 
-export default defineComponent({
-  components: { FontAwesomeIcon },
-  data() {
-    return {
-      iconos: [
-        { icon: faSeedling, texto: "Información sobre Cultivos" },
-        { icon: faNewspaper, texto: "Últimas Noticias" },
-        { icon: faSun, texto: "Condiciones Climáticas" },
-        { icon: faTag, texto: "Precios del Mercado" },
-        { icon: faHouseChimney, texto: "Información de la Finca" },
-      ],
+export default {
+  setup() {
+    const router = useRouter();
+
+    const iconos = [
+      { icon: 'seedling', texto: 'Información sobre Cultivos', ruta: 'cultivos' },
+      { icon: 'newspaper', texto: 'Últimas Noticias', ruta: 'noticias' },
+      { icon: 'sun', texto: 'Condiciones Climáticas', ruta: 'clima' },
+      { icon: 'tag', texto: 'Precios del Mercado', ruta: 'mercado' },
+      { icon: 'house-chimney', texto: 'Información de la Finca', ruta: 'finca' }
+    ];
+
+    const irAPagina = (item) => {
+      const tipo = localStorage.getItem('tipo') || 'mora'; // Detecta si es mora o café
+      router.push(`/${tipo}/${item.ruta}`);
     };
-  },
-  methods: {
-    emitirEvento(texto) {
-      console.log("Icono clickeado:", texto); // Para verificar si el evento se emite
-      this.$emit("icon-clicked", texto); // Se alineó con WelcomeUser.vue
-    },
-  },
-});
+
+    return { iconos, irAPagina };
+  }
+};
 </script>
 
 <style scoped>
 .sidebar {
-  position: fixed;
-  left: 85%;
-  top: 14%;
-  transform: translateY(-50%);
-  background: rgba(122, 34, 139, 0.7);
-  padding: 3px;
-  border-radius: 0 10px 10px 0;
-  display: flex;
-  flex-direction:row;
-  gap: 8px;
+  width: 250px;
+  background-color: #222;
+  color: white;
+  padding: 20px;
 }
 
-button {
-  background: transparent;
-  border: none;
+ul {
+  list-style: none;
+  padding: 0;
+}
+
+li {
   cursor: pointer;
+  padding: 10px;
+  display: flex;
+  align-items: center;
 }
 
-.icon {
-  color: rgb(255, 255, 255);
-  font-size: 24px;
+li:hover {
+  background-color: #444;
 }
 </style>
