@@ -21,7 +21,7 @@ const routes = [
   { path: '/register', component: RegisterUsers }, // Ruta para la página de registro
   { path: '/welcome/:name', component: WelcomeUsers }, // Ruta de WelcomeUsers
 
-  { path: '/:tipo/cultivos', component: CultivosInfo },
+  { path: '/:tipo/cultivos', component: CultivosInfo }, 
   { path: '/:tipo/noticias', component: NoticiasInfo },
   { path: '/:tipo/clima', component: ClimaInfo },
   { path: '/:tipo/mercado', component: MercadoInfo },

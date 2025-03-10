@@ -13,7 +13,6 @@
 
 
 import { defineStore } from "pinia";
-
 export const useToggleStore = defineStore("toggle", {
   state: () => ({
     isCafe: false, // Estado inicial: Mora
