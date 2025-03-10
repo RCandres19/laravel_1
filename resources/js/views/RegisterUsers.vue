@@ -1,14 +1,20 @@
 <template>
   <div class="relative h-screen flex justify-center items-center overflow-hidden">
     <!-- Imagen de fondo desenfocada -->
-    <div class="absolute inset-0 bg-cover bg-center blur-sm" style="background-image: url('@/assets/img/cultivasena.png');"></div>
+    <div 
+      class="absolute inset-0 bg-cover bg-center blur-sm" 
+      style="background-image: url('@/assets/img/cultivasena.png');"
+    ></div>
 
     <!-- Contenedor del formulario -->
     <div class="relative bg-white bg-opacity-20 backdrop-blur-md p-6 rounded-lg shadow-lg w-80 text-center">
       <h2 class="text-2xl font-bold text-gray-800">Registro</h2>
 
       <!-- Selección del tipo de documento -->
-      <select v-model="type_document" class="w-full mt-3 p-2 rounded bg-white bg-opacity-50 focus:ring-2 focus:ring-green-500">
+      <select 
+        v-model="type_document" 
+        class="w-full mt-3 p-2 rounded bg-white bg-opacity-50 focus:ring-2 focus:ring-green-500"
+      >
         <option value="" disabled selected>Selecciona un tipo de documento</option>
         <option value="PPT">Permiso de Protección Temporal</option>
         <option value="PEP">Permiso Especial de Permanencia</option>
@@ -17,13 +23,28 @@
         <option value="Pasaporte">Pasaporte</option>
       </select>
 
-      <!-- Campos de entrada -->
-      <input v-model="name" placeholder="Nombre" class="w-full mt-3 p-2 rounded bg-white bg-opacity-50 focus:ring-2 focus:ring-green-500" />
-      <input v-model="document" placeholder="Documento" class="w-full mt-3 p-2 rounded bg-white bg-opacity-50 focus:ring-2 focus:ring-green-500" />
-      <input v-model="email" placeholder="Correo (opcional)" class="w-full mt-3 p-2 rounded bg-white bg-opacity-50 focus:ring-2 focus:ring-green-500" />
+      <!-- Campos de entrada para el usuario -->
+      <input 
+        v-model="name" 
+        placeholder="Nombre" 
+        class="w-full mt-3 p-2 rounded bg-white bg-opacity-50 focus:ring-2 focus:ring-green-500" 
+      />
+      <input 
+        v-model="document" 
+        placeholder="Documento" 
+        class="w-full mt-3 p-2 rounded bg-white bg-opacity-50 focus:ring-2 focus:ring-green-500" 
+      />
+      <input 
+        v-model="email" 
+        placeholder="Correo (opcional)" 
+        class="w-full mt-3 p-2 rounded bg-white bg-opacity-50 focus:ring-2 focus:ring-green-500" 
+      />
 
       <!-- Botón de registro -->
-      <button @click="register" class="w-full bg-green-600 text-white py-2 rounded mt-4 hover:bg-green-700 transition">
+      <button 
+        @click="register" 
+        class="w-full bg-green-600 text-white py-2 rounded mt-4 hover:bg-green-700 transition"
+      >
         Registrar
       </button>
 
@@ -33,27 +54,47 @@
       <!-- Enlace de inicio de sesión -->
       <p class="mt-4 text-sm text-gray-800">
         ¿Ya tienes cuenta? 
-        <router-link to="/login" class="text-green-700 font-bold hover:underline">Inicia sesión aquí</router-link>
+        <router-link to="/login" class="text-green-700 font-bold hover:underline">
+          Inicia sesión aquí
+        </router-link>
       </p>
     </div>
   </div>
 </template>
 
 <script setup>
+/**
+ * Importamos las herramientas necesarias:
+ * - `ref` para manejar variables reactivas.
+ * - `useRouter` para la navegación en Vue Router.
+ * - `axios` para hacer peticiones HTTP a la API.
+ * - `Swal` (SweetAlert2) para mostrar alertas estilizadas.
+ */
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 
+/**
+ * Inicializamos el router para manejar la navegación entre páginas.
+ */
 const router = useRouter();
+
+/**
+ * Variables reactivas para almacenar los datos del usuario.
+ */
 const name = ref('');
 const type_document = ref('');
 const document = ref('');
 const email = ref('');
 const errorMessage = ref('');
 
+/**
+ * Función para registrar un nuevo usuario enviando los datos a la API.
+ */
 const register = async () => {
   try {
+    // Envío de datos al backend en Laravel
     await axios.post('http://127.0.0.1:8000/api/register', {
       name: name.value,
       type_document: type_document.value,
@@ -61,6 +102,7 @@ const register = async () => {
       email: email.value
     });
 
+    // Alerta de éxito con SweetAlert2
     Swal.fire({
       title: 'Registro Exitoso',
       text: `Bienvenido, ${name.value}!`,
@@ -68,12 +110,15 @@ const register = async () => {
       confirmButtonColor: '#38af3e'
     });
 
+    // Redirige a la página de bienvenida con el nombre del usuario
     router.push(`/welcome/${name.value}`);
   } catch (error) {
+    // Captura errores y muestra un mensaje en caso de fallo
     errorMessage.value = 'Error en la conexión con la API';
   }
 };
 </script>
+
 
 
 

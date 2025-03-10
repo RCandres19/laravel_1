@@ -87,51 +87,86 @@ const login = async () => {
 <template>
   <div class="relative w-screen h-screen flex justify-center items-center overflow-hidden">
     <!-- Imagen de fondo desenfocada -->
-    <div class="absolute inset-0 bg-cover bg-center blur-md" style="background-image: url('@/assets/img/cultivasena.png');"></div>
+    <div 
+      class="absolute inset-0 bg-cover bg-center blur-md" 
+      style="background-image: url('@/assets/img/cultivasena.png');"
+    ></div>
 
-    <!-- Contenedor del formulario -->
+    <!-- Contenedor del formulario de inicio de sesión -->
     <div class="relative bg-white bg-opacity-20 backdrop-blur-md p-6 rounded-lg shadow-lg w-80 text-center">
       <h2 class="text-2xl font-bold text-gray-800">Login</h2>
 
-      <!-- Campos de entrada -->
-      <input v-model="name" placeholder="Nombre" class="w-full mt-3 p-2 rounded bg-white bg-opacity-50 focus:ring-2 focus:ring-green-500" />
-      <input v-model="document" placeholder="Documento" class="w-full mt-3 p-2 rounded bg-white bg-opacity-50 focus:ring-2 focus:ring-green-500" />
+      <!-- Campos de entrada para el usuario -->
+      <input 
+        v-model="name" 
+        placeholder="Nombre" 
+        class="w-full mt-3 p-2 rounded bg-white bg-opacity-50 focus:ring-2 focus:ring-green-500" 
+      />
+      <input 
+        v-model="document" 
+        placeholder="Documento" 
+        class="w-full mt-3 p-2 rounded bg-white bg-opacity-50 focus:ring-2 focus:ring-green-500" 
+      />
 
       <!-- Botón de inicio de sesión -->
-      <button @click="login" class="w-full bg-green-600 text-white py-2 rounded mt-4 hover:bg-green-700 transition">
+      <button 
+        @click="login" 
+        class="w-full bg-green-600 text-white py-2 rounded mt-4 hover:bg-green-700 transition"
+      >
         Ingresar
       </button>
 
-      <!-- Mensaje de error -->
+      <!-- Mensaje de error en caso de fallos -->
       <p v-if="errorMessage" class="text-red-500 mt-2">{{ errorMessage }}</p>
 
-      <!-- Enlace de registro -->
+      <!-- Enlace para ir al registro si no tiene cuenta -->
       <p class="mt-4 text-sm text-gray-800">
         ¿No tienes cuenta? 
-        <router-link to="/register" class="text-green-700 font-bold hover:underline">Regístrate aquí</router-link>
+        <router-link to="/register" class="text-green-700 font-bold hover:underline">
+          Regístrate aquí
+        </router-link>
       </p>
     </div>
   </div>
 </template>
 
 <script setup>
+/**
+ * Importamos las herramientas necesarias:
+ * - `ref` para manejar variables reactivas.
+ * - `useRouter` para la navegación en Vue Router.
+ * - `axios` para hacer peticiones HTTP a la API.
+ * - `Swal` (SweetAlert2) para mostrar alertas estilizadas.
+ */
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 
+/**
+ * Inicializamos el router para manejar la navegación entre páginas.
+ */
 const router = useRouter();
+
+/**
+ * Variables reactivas para capturar la entrada del usuario.
+ */
 const name = ref('');
 const document = ref('');
 const errorMessage = ref('');
 
+/**
+ * Función para iniciar sesión verificando los datos en la API.
+ */
 const login = async () => {
   try {
+    // Envío de datos al backend en Laravel
     const response = await axios.post('http://127.0.0.1:8000/api/login', {
       name: name.value,
       document: document.value
     });
 
+    // Si la respuesta de la API es exitosa, redirige al usuario
     if (response.data.success) {
       Swal.fire({
         title: 'Ingreso Exitoso',
@@ -140,11 +175,14 @@ const login = async () => {
         confirmButtonColor: '#38af3e'
       });
 
+      // Redirige a la página de bienvenida con el nombre del usuario
       router.push(`/welcome/${name.value}`);
     } else {
+      // Si no se encuentra el usuario, muestra un mensaje de error
       errorMessage.value = 'Usuario no encontrado';
     }
   } catch (error) {
+    // Captura errores y muestra un mensaje en caso de fallo en la conexión
     errorMessage.value = 'Error en la conexión con la API';
   }
 };

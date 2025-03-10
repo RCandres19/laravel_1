@@ -150,11 +150,18 @@ export default defineComponent({
 </style>  -->
 
 <template>
+  <!-- Contenedor principal que usa una imagen de fondo dinámica según el tipo seleccionado -->
   <BackgroundImage :tipo="tipoSeleccionado">
+    <!-- Barra de navegación superior con menú desplegable -->
     <NavegaBarra @menu-seleccionado="accionMenu" />
+    
+    <!-- Barra lateral con iconos de navegación -->
     <SidebarLateral @icon-clicked="mostrarInformacion" />
+    
+    <!-- Toggle para cambiar entre "Mora" y "Café" -->
     <ToggleSwitchMc @toggle-cambiado="cambiarTipo" />
 
+    <!-- Cuadro central con mensaje de bienvenida y la información seleccionada -->
     <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white bg-opacity-80 p-6 rounded-lg shadow-lg text-center">
       <h1 class="text-2xl font-bold">Bienvenido, {{ nombre }}</h1>
       <p class="text-gray-700 mt-2">{{ informacion }}</p>
@@ -163,6 +170,12 @@ export default defineComponent({
 </template>
 
 <script setup>
+/**
+ * Importamos las herramientas y componentes necesarios:
+ * - `ref` para manejar estados reactivos.
+ * - `useToggleStore` de Pinia para gestionar el estado global.
+ * - `storeToRefs` para acceder a propiedades reactivas del store.
+ */
 import { ref } from "vue";
 import { useToggleStore } from "@/store/toggleStore";
 import { storeToRefs } from "pinia";
@@ -171,23 +184,39 @@ import NavegaBarra from "@/components/NavegaBarra.vue";
 import SidebarLateral from "@/components/SidebarLateral.vue";
 import ToggleSwitchMc from "@/components/ToggleSwitchMc.vue";
 
+/**
+ * Obtenemos el estado global de Pinia para manejar el tipo de vista (Mora/Café) y el nombre del usuario.
+ */
 const toggleStore = useToggleStore();
 const { nombre, tipoSeleccionado } = storeToRefs(toggleStore);
+
+/**
+ * Variable reactiva para mostrar información dinámica según la selección del usuario.
+ */
 const informacion = ref("Seleccione una opción");
 
-// Evento cuando se selecciona una opción del menú
+/**
+ * Maneja la selección en el menú de navegación.
+ * @param {string} opcion - Opción seleccionada en el menú.
+ */
 const accionMenu = (opcion) => {
   console.log("Menú seleccionado:", opcion);
   informacion.value = `Seleccionaste: ${opcion}`;
 };
 
-// Evento para cambiar entre Mora y Café
+/**
+ * Cambia entre Mora y Café al activar el interruptor (toggle).
+ * También actualiza el mensaje mostrado en pantalla.
+ */
 const cambiarTipo = () => {
-  toggleStore.toggle(); // Cambia entre Mora y Café
+  toggleStore.toggle(); // Alterna entre Mora y Café
   informacion.value = `Vista de ${tipoSeleccionado.value}`;
 };
 
-// Evento para capturar clics en los iconos de la barra lateral
+/**
+ * Maneja los clics en los iconos de la barra lateral y actualiza el mensaje mostrado.
+ * @param {string} info - Información del icono seleccionado.
+ */
 const mostrarInformacion = (info) => {
   console.log("Icono seleccionado:", info);
   informacion.value = info;

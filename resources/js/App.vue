@@ -49,10 +49,21 @@ onMounted(async () => {
 </template>-->
 
 <template>
+  <!-- Contenedor principal que ocupa toda la pantalla -->
   <div class="min-h-screen bg-gray-100">
+    <!-- router-view es un componente dinámico que muestra la página actual según la ruta -->
     <router-view />
   </div>
 </template>
 
 <script setup>
+/**
+ * Este es el componente raíz de la aplicación Vue.js.
+ * 
+ * - `router-view` se encarga de renderizar dinámicamente el componente correspondiente a la ruta activa.
+ * - La clase `min-h-screen` garantiza que el fondo cubra toda la altura de la pantalla.
+ * - `bg-gray-100` da un fondo gris claro para una mejor estética.
+ * 
+ * Nota: `script setup` se usa para simplificar el código y mejorar el rendimiento.
+ */
 </script>
