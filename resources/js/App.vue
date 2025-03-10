@@ -49,14 +49,10 @@ onMounted(async () => {
 </template>-->
 
 <template>
-  <div>
-    <!-- router-view actúa como un contenedor dinámico que renderiza la vista actual -->
-    <router-view></router-view>
+  <div class="min-h-screen bg-gray-100">
+    <router-view />
   </div>
 </template>
 
-<script>
-export default {
-  name: "App", // Nombre del componente principal de la aplicación
-};
+<script setup>
 </script>

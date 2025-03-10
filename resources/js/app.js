@@ -6,7 +6,7 @@
 import { createApp } from 'vue'; // Importa la función para crear la aplicación Vue
 import App from './App.vue'; // Importa el componente principal de la aplicación
 import router from './router'; // Importa el enrutador de Vue Router
-import './assets/style.css'; // Importa un archivo de estilos globales
+import './assets/app.css'; // Importa un archivo de estilos globales
 import axios from 'axios'; // Importa Axios para manejar solicitudes HTTP
 
 import { createPinia } from 'pinia'; // Importamos Pinia

@@ -1,60 +1,30 @@
 <template>
-  <div class="sidebar">
-    <ul>
-      <li v-for="(item, index) in iconos" :key="index" @click="irAPagina(item)">
-        <font-awesome-icon :icon="item.icon" />
-        <span>{{ item.texto }}</span>
+  <div class="w-64 bg-gray-900 text-white p-5 h-screen fixed">
+    <ul class="space-y-4">
+      <li v-for="(item, index) in iconos" :key="index" @click="irAPagina(item)" 
+          class="flex items-center space-x-3 p-3 rounded-lg cursor-pointer hover:bg-gray-700 transition-all">
+        <font-awesome-icon :icon="item.icon" class="text-xl" />
+        <span class="text-lg">{{ item.texto }}</span>
       </li>
     </ul>
   </div>
 </template>
 
-<script>
+<script setup>
 import { useRouter } from 'vue-router';
 
-export default {
-  setup() {
-    const router = useRouter();
+const router = useRouter();
 
-    const iconos = [
-      { icon: 'seedling', texto: 'Información sobre Cultivos', ruta: 'cultivos' },
-      { icon: 'newspaper', texto: 'Últimas Noticias', ruta: 'noticias' },
-      { icon: 'sun', texto: 'Condiciones Climáticas', ruta: 'clima' },
-      { icon: 'tag', texto: 'Precios del Mercado', ruta: 'mercado' },
-      { icon: 'house-chimney', texto: 'Información de la Finca', ruta: 'finca' }
-    ];
+const iconos = [
+  { icon: 'seedling', texto: 'Información sobre Cultivos', ruta: 'cultivos' },
+  { icon: 'newspaper', texto: 'Últimas Noticias', ruta: 'noticias' },
+  { icon: 'sun', texto: 'Condiciones Climáticas', ruta: 'clima' },
+  { icon: 'tag', texto: 'Precios del Mercado', ruta: 'mercado' },
+  { icon: 'house-chimney', texto: 'Información de la Finca', ruta: 'finca' }
+];
 
-    const irAPagina = (item) => {
-      const tipo = localStorage.getItem('tipo') || 'mora'; // Detecta si es mora o café
-      router.push(`/${tipo}/${item.ruta}`);
-    };
-
-    return { iconos, irAPagina };
-  }
+const irAPagina = (item) => {
+  const tipo = localStorage.getItem('tipo') || 'mora'; // Detecta si es mora o café
+  router.push(`/${tipo}/${item.ruta}`);
 };
 </script>
-
-<style scoped>
-.sidebar {
-  width: 250px;
-  background-color: #222;
-  color: white;
-  padding: 20px;
-}
-
-ul {
-  list-style: none;
-  padding: 0;
-}
-
-li {
-  cursor: pointer;
-  padding: 10px;
-  display: flex;
-  align-items: center;
-}
-
-li:hover {
-  background-color: #444;
-}
-</style>

@@ -1,7 +1,0 @@
-/* Establece la fuente principal del documento a Arial, con respaldo en fuentes sans-serif */
-body {
-  font-family: Arial, sans-serif;
-  
-  /* Define el color de fondo de toda la página */
-  background-color: #f4f4f4;
-}

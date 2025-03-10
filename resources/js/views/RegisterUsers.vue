@@ -1,61 +1,59 @@
 <template>
-  <div class="register">
-    <!-- Contenedor del formulario de registro -->
-    <div class="form-container">
-      <h2>Registro</h2>
+  <div class="relative h-screen flex justify-center items-center overflow-hidden">
+    <!-- Imagen de fondo desenfocada -->
+    <div class="absolute inset-0 bg-cover bg-center blur-sm" style="background-image: url('@/assets/img/cultivasena.png');"></div>
+
+    <!-- Contenedor del formulario -->
+    <div class="relative bg-white bg-opacity-20 backdrop-blur-md p-6 rounded-lg shadow-lg w-80 text-center">
+      <h2 class="text-2xl font-bold text-gray-800">Registro</h2>
 
       <!-- Selección del tipo de documento -->
-      <select v-model="type_document">
+      <select v-model="type_document" class="w-full mt-3 p-2 rounded bg-white bg-opacity-50 focus:ring-2 focus:ring-green-500">
         <option value="" disabled selected>Selecciona un tipo de documento</option>
         <option value="PPT">Permiso de Protección Temporal</option>
         <option value="PEP">Permiso Especial de Permanencia</option>
-        <option value="CC">Cedula Colombiana</option>
+        <option value="CC">Cédula Colombiana</option>
         <option value="TI">Tarjeta de Identidad</option>
         <option value="Pasaporte">Pasaporte</option>
       </select>
-      
-      <!-- Campo de entrada para el nombre del usuario -->
-      <input v-model="name" placeholder="Nombre" />
 
-      <!-- Campo de entrada para el número de documento -->
-      <input v-model="document" placeholder="Documento" />
+      <!-- Campos de entrada -->
+      <input v-model="name" placeholder="Nombre" class="w-full mt-3 p-2 rounded bg-white bg-opacity-50 focus:ring-2 focus:ring-green-500" />
+      <input v-model="document" placeholder="Documento" class="w-full mt-3 p-2 rounded bg-white bg-opacity-50 focus:ring-2 focus:ring-green-500" />
+      <input v-model="email" placeholder="Correo (opcional)" class="w-full mt-3 p-2 rounded bg-white bg-opacity-50 focus:ring-2 focus:ring-green-500" />
 
-      <!-- Campo de entrada para el correo electrónico (opcional) -->
-      <input v-model="email" placeholder="Correo (opcional)" />
+      <!-- Botón de registro -->
+      <button @click="register" class="w-full bg-green-600 text-white py-2 rounded mt-4 hover:bg-green-700 transition">
+        Registrar
+      </button>
 
-      <!-- Botón para registrar al usuario -->
-      <button @click="register">Registrar</button>
+      <!-- Mensaje de error -->
+      <p v-if="errorMessage" class="text-red-500 mt-2">{{ errorMessage }}</p>
 
-      <!-- Mensaje de error en caso de fallo -->
-      <p class="error">{{ errorMessage }}</p>
-
-      <!-- Enlace para redirigir a la página de inicio de sesión -->
-      <p class="login-link">
-        ¿Ya tienes cuenta? <router-link to="/login">Inicia sesión aquí</router-link>
+      <!-- Enlace de inicio de sesión -->
+      <p class="mt-4 text-sm text-gray-800">
+        ¿Ya tienes cuenta? 
+        <router-link to="/login" class="text-green-700 font-bold hover:underline">Inicia sesión aquí</router-link>
       </p>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'; // Importamos ref para manejar variables reactivas
-import { useRouter } from 'vue-router'; // Importamos el enrutador para la navegación
-import axios from 'axios'; // Importamos axios para hacer peticiones HTTP
-import Swal from 'sweetalert2'; // Importamos SweetAlert2 para mostrar mensajes bonitos
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+import axios from 'axios';
+import Swal from 'sweetalert2';
 
-const router = useRouter(); // Inicializamos el enrutador
-
-// Variables reactivas para almacenar los datos del formulario
+const router = useRouter();
 const name = ref('');
 const type_document = ref('');
 const document = ref('');
 const email = ref('');
 const errorMessage = ref('');
 
-// Función asincrónica para registrar un usuario
 const register = async () => {
   try {
-    // Enviamos una solicitud POST a la API para registrar al usuario
     await axios.post('http://127.0.0.1:8000/api/register', {
       name: name.value,
       type_document: type_document.value,
@@ -63,7 +61,6 @@ const register = async () => {
       email: email.value
     });
 
-    // Mostramos una alerta de éxito con SweetAlert2
     Swal.fire({
       title: 'Registro Exitoso',
       text: `Bienvenido, ${name.value}!`,
@@ -71,100 +68,12 @@ const register = async () => {
       confirmButtonColor: '#38af3e'
     });
 
-    // Redirigimos al usuario a la página de bienvenida con su nombre
     router.push(`/welcome/${name.value}`);
   } catch (error) {
-    // Capturamos errores y mostramos un mensaje de error
     errorMessage.value = 'Error en la conexión con la API';
   }
 };
 </script>
-
-
-<style scoped>
-:root {
-  --blur-amount: 8px;
-}
-
-.register {
-  position: relative;
-  height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  overflow: hidden;
-}
-
-.register::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: url('@/assets/img/cultivasena.png') no-repeat center center;
-  background-size: cover;
-  filter: blur(var(--blur-amount, 3px));
-  z-index: -1;
-}
-
-.form-container {
-  background: rgba(189, 181, 181, 0.144);
-  padding: 25px;
-  border-radius: 10px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-  text-align: center;
-  backdrop-filter: blur(10px);
-  width: 300px;
-}
-
-input, select {
-  display: block;
-  width: 100%;
-  margin: 10px 0;
-  padding: 10px;
-  border-radius: 5px;
-  border: none;
-  background: rgba(255, 255, 255, 0.3);
-  backdrop-filter: blur(5px);
-}
-
-button {
-  background-color: #38af3e;
-  color: white;
-  padding: 10px 20px;
-  border: none;
-  cursor: pointer;
-  transition: 0.3s;
-  border-radius: 5px;
-  width: 100%;
-}
-
-button:hover {
-  background-color: #239713;
-}
-
-.error {
-  color: red;
-  margin-top: 10px;
-}
-
-.login-link {
-  margin-top: 15px;
-  font-size: 14px;
-  color: #000;
-}
-
-.login-link a {
-  color: #239713;
-  text-decoration: none;
-  font-weight: bold;
-}
-
-.login-link a:hover {
-  text-decoration: underline;
-}
-</style>
 
 
 
@@ -245,7 +154,6 @@ const register = async () => {
   color: red;
 }
 </style> -->
-
 
 <!--<template>
   <div class="register-container">

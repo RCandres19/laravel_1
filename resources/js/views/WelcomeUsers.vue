@@ -27,9 +27,6 @@ const props = defineProps(['name']);
 }
 </style>  -->
 
-
-
-
 <!--<template>
   <div class="welcome-container">
     <h1>Bienvenido, {{ user.name }}!</h1>
@@ -94,7 +91,6 @@ export default {
 }
 </style>  -->
 
-
 <!--<template>
   <BackgroundImage :tipo="tipoSeleccionado">
     <NavegaBarra @menu-seleccionado="accionMenu" />
@@ -153,16 +149,15 @@ export default defineComponent({
 }
 </style>  -->
 
-
 <template>
   <BackgroundImage :tipo="tipoSeleccionado">
     <NavegaBarra @menu-seleccionado="accionMenu" />
-    <SidebarLateral @icon-clicked="mostrarInformacion" />  <!-- Se alineó el evento -->
+    <SidebarLateral @icon-clicked="mostrarInformacion" />
     <ToggleSwitchMc @toggle-cambiado="cambiarTipo" />
-    
-    <div class="contenido">
-      <h1>Bienvenido, {{ nombre }}</h1>
-      <p>{{ informacion }}</p>
+
+    <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white bg-opacity-80 p-6 rounded-lg shadow-lg text-center">
+      <h1 class="text-2xl font-bold">Bienvenido, {{ nombre }}</h1>
+      <p class="text-gray-700 mt-2">{{ informacion }}</p>
     </div>
   </BackgroundImage>
 </template>
@@ -194,20 +189,7 @@ const cambiarTipo = () => {
 
 // Evento para capturar clics en los iconos de la barra lateral
 const mostrarInformacion = (info) => {
-  console.log("Icono seleccionado:", info); // Verifica en consola si el evento se emite
+  console.log("Icono seleccionado:", info);
   informacion.value = info;
 };
 </script>
-
-<style scoped>
-.contenido {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background: rgba(255, 255, 255, 0.8);
-  padding: 20px;
-  border-radius: 10px;
-  text-align: center;
-}
-</style>

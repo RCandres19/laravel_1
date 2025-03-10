@@ -1,5 +1,8 @@
 <template>
-  <div class="background" :style="{ backgroundImage: `url(${imagenFondo})` }">
+  <div
+    class="fixed inset-0 bg-cover bg-center bg-no-repeat -z-50"
+    :style="{ backgroundImage: `url(${imagenFondo})` }"
+  >
     <slot></slot>
   </div>
 </template>
@@ -26,17 +29,3 @@ export default defineComponent({
   },
 });
 </script>
-
-<style scoped>
-.background {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  z-index: -100;
-}
-</style>
