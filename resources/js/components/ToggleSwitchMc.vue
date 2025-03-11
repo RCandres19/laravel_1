@@ -22,7 +22,7 @@
  * Importamos `ref` para manejar el estado reactivo del interruptor
  * y `defineEmits` para emitir eventos al componente padre.
  */
-import { ref, defineEmits } from "vue";
+import { ref } from "vue";
 
 /**
  * Estado del interruptor:
@@ -34,6 +34,7 @@ const activo = ref(false);
 /**
  * Emitimos un evento personalizado `"toggle-cambiado"`
  * cada vez que el usuario cambia el interruptor.
+ * Usamos `defineEmits` directamente, sin importarlo
  */
 const emit = defineEmits(["toggle-cambiado"]);
 

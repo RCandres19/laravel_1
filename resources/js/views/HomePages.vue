@@ -3,6 +3,7 @@
  * Importamos `useRouter` de Vue Router para manejar la navegación en la aplicación.
  */
 import { useRouter } from 'vue-router';
+import cultivaSena from "@/assets/img/cultivasena.png"; // Importa la imagen correctamente
 
 /**
  * Inicializamos `router` para permitir la redirección entre páginas.
@@ -18,14 +19,13 @@ const goToLogin = () => {
 </script>
 
 <template>
-  <div
-    class="w-screen h-screen bg-cover bg-center bg-no-repeat flex justify-end items-start p-5"
-    style="background-image: url('@/assets/img/cultivasena.png');"
+  <div 
+    class="w-full h-screen bg-cover bg-center" 
+    :style="{ backgroundImage: `url(${cultivaSena})` }"
   >
-    <!-- Botón de inicio de sesión -->
-    <button
+    <button 
       @click="goToLogin"
-      class="px-6 py-3 bg-green-700 text-white font-bold text-lg rounded-lg transition duration-300 hover:bg-blue-900"
+      class="mt-10 ml-10 px-4 py-2 bg-blue-500 text-white rounded"
     >
       Iniciar sesión
     </button>

@@ -11,11 +11,11 @@
 
 <script setup>
 import { computed } from "vue";
-import { defineProps } from "vue";
 
 /**
  * 📌 Definir las propiedades del componente
  *    - `tipo`: Indica el tipo de cultivo ("Mora" o "Café").
+ *     Usamos `defineProps` directamente, sin importarlo
  */
 const props = defineProps({
   tipo: {

@@ -165,6 +165,9 @@ export default defineComponent({
     <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white bg-opacity-80 p-6 rounded-lg shadow-lg text-center">
       <h1 class="text-2xl font-bold">Bienvenido, {{ nombre }}</h1>
       <p class="text-gray-700 mt-2">{{ informacion }}</p>
+      <div class="contenido">
+        <router-view/>
+      </div>
     </div>
   </BackgroundImage>
 </template>

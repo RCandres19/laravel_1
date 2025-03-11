@@ -14,8 +14,6 @@ Route::delete('/users/{id}', [UserController::class, 'destroy']); // Eliminar un
 // Rutas de autenticación (registro e inicio de sesión sin contraseña)
 Route::post('/register', [AuthController::class, 'register']); // Registrar un usuario
 Route::post('/login', [AuthController::class, 'login']); // Iniciar sesión enviando nombre y documento
-Route::get('/login', [AuthController::class, 'login']); // Alternativa para login por GET (no recomendado en producción)
-
 // Ruta de prueba (comenta si no se usa)
 // use App\Http\Controllers\Api\TestController;
 // Route::get('/test', [TestController::class, 'index']); // Prueba de conexión Laravel-Vue.js

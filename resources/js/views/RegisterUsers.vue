@@ -3,17 +3,17 @@
     <!-- Imagen de fondo desenfocada -->
     <div 
       class="absolute inset-0 bg-cover bg-center blur-sm" 
-      style="background-image: url('@/assets/img/cultivasena.png');"
+      :style="{ backgroundImage: `url(${backgroundImage})` }"
     ></div>
 
     <!-- Contenedor del formulario -->
     <div class="relative bg-white bg-opacity-20 backdrop-blur-md p-6 rounded-lg shadow-lg w-80 text-center">
-      <h2 class="text-2xl font-bold text-gray-800">Registro</h2>
+      <h2 class="text-2xl font-bold text-gray-800">Registro de Usuario</h2>
 
       <!-- Selección del tipo de documento -->
       <select 
         v-model="type_document" 
-        class="w-full mt-3 p-2 rounded bg-white bg-opacity-50 focus:ring-2 focus:ring-green-500"
+        class="w-full mt-3 p-2 rounded bg-white bg-opacity-50 focus:ring-2 focus:ring-blue-500"
       >
         <option value="" disabled selected>Selecciona un tipo de documento</option>
         <option value="PPT">Permiso de Protección Temporal</option>
@@ -27,25 +27,25 @@
       <input 
         v-model="name" 
         placeholder="Nombre" 
-        class="w-full mt-3 p-2 rounded bg-white bg-opacity-50 focus:ring-2 focus:ring-green-500" 
+        class="w-full mt-3 p-2 rounded bg-white bg-opacity-50 focus:ring-2 focus:ring-blue-500" 
       />
       <input 
         v-model="document" 
         placeholder="Documento" 
-        class="w-full mt-3 p-2 rounded bg-white bg-opacity-50 focus:ring-2 focus:ring-green-500" 
+        class="w-full mt-3 p-2 rounded bg-white bg-opacity-50 focus:ring-2 focus:ring-blue-500" 
       />
       <input 
         v-model="email" 
         placeholder="Correo (opcional)" 
-        class="w-full mt-3 p-2 rounded bg-white bg-opacity-50 focus:ring-2 focus:ring-green-500" 
+        class="w-full mt-3 p-2 rounded bg-white bg-opacity-50 focus:ring-2 focus:ring-blue-500" 
       />
 
       <!-- Botón de registro -->
       <button 
-        @click="register" 
-        class="w-full bg-green-600 text-white py-2 rounded mt-4 hover:bg-green-700 transition"
+        @click="registerUser" 
+        class="w-full bg-blue-600 text-white py-2 rounded mt-4 hover:bg-blue-700 transition"
       >
-        Registrar
+        Registrarse
       </button>
 
       <!-- Mensaje de error -->
@@ -54,7 +54,7 @@
       <!-- Enlace de inicio de sesión -->
       <p class="mt-4 text-sm text-gray-800">
         ¿Ya tienes cuenta? 
-        <router-link to="/login" class="text-green-700 font-bold hover:underline">
+        <router-link to="/login" class="text-blue-700 font-bold hover:underline">
           Inicia sesión aquí
         </router-link>
       </p>
@@ -75,9 +75,9 @@ import { useRouter } from 'vue-router';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 
-/**
- * Inicializamos el router para manejar la navegación entre páginas.
- */
+// Importa la imagen correctamente
+import backgroundImage from '@/assets/img/cultivasena.png';
+
 const router = useRouter();
 
 /**
@@ -89,13 +89,9 @@ const document = ref('');
 const email = ref('');
 const errorMessage = ref('');
 
-/**
- * Función para registrar un nuevo usuario enviando los datos a la API.
- */
-const register = async () => {
+const registerUser = async () => {
   try {
-    // Envío de datos al backend en Laravel
-    await axios.post('http://127.0.0.1:8000/api/register', {
+    await axios.post('http://127.0.0.1:8000/api/registerUser', {
       name: name.value,
       type_document: type_document.value,
       document: document.value,
@@ -107,11 +103,10 @@ const register = async () => {
       title: 'Registro Exitoso',
       text: `Bienvenido, ${name.value}!`,
       icon: 'success',
-      confirmButtonColor: '#38af3e'
+      confirmButtonColor: '#1d4ed8'
     });
 
-    // Redirige a la página de bienvenida con el nombre del usuario
-    router.push(`/welcome/${name.value}`);
+    router.push(`/dashboard/${name.value}`);
   } catch (error) {
     // Captura errores y muestra un mensaje en caso de fallo
     errorMessage.value = 'Error en la conexión con la API';

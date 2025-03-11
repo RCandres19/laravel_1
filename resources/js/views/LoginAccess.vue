@@ -88,8 +88,8 @@ const login = async () => {
   <div class="relative w-screen h-screen flex justify-center items-center overflow-hidden">
     <!-- Imagen de fondo desenfocada -->
     <div 
-      class="absolute inset-0 bg-cover bg-center blur-md" 
-      style="background-image: url('@/assets/img/cultivasena.png');"
+      class="absolute inset-0 bg-cover bg-center blur-md"
+      :style="{ backgroundImage: `url(${backgroundImage})` }"
     ></div>
 
     <!-- Contenedor del formulario de inicio de sesión -->
@@ -142,7 +142,7 @@ import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
 import Swal from 'sweetalert2';
-
+import backgroundImage from '@/assets/img/cultivasena.png';
 /**
  * Inicializamos el router para manejar la navegación entre páginas.
  */

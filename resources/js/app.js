@@ -10,13 +10,6 @@ import './assets/app.css'; // Importa un archivo de estilos globales
 import axios from 'axios'; // Importa Axios para manejar solicitudes HTTP
 
 import { createPinia } from 'pinia'; // Importamos Pinia
-import { library } from "@fortawesome/fontawesome-svg-core";
-import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-import { faHome, faUser, faBell, faCog, faSignOutAlt, faBars} from "@fortawesome/free-solid-svg-icons";
-
-// Agregar iconos a la librería
-library.add(faHome, faUser, faBell, faCog, faSignOutAlt, faBars);
-
 
 
 // Configuración de la base URL de Axios para que todas las solicitudes apunten a la API de Laravel
@@ -33,9 +26,6 @@ app.use(router);
 
 // Registra Pinia en la app
 app.use(createPinia()); 
-
-//COmponente de FontAwesome
-app.component("font-awesome-icon", FontAwesomeIcon);
 
 // Monta la aplicación en el elemento con el ID "app" en el archivo HTML
 app.mount('#app');
