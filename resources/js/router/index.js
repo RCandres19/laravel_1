@@ -7,6 +7,12 @@ import LoginAccess from '../views/LoginAccess.vue';
 import RegisterUsers from '../views/RegisterUsers.vue';
 import WelcomeUsers from '../views/WelcomeUsers.vue';
 
+import CultivosInfo from '../views/CultivosInfo.vue';
+import NoticiasInfo from '../views/NoticiasInfo.vue';
+import ClimaInfo from '../views/ClimaInfo.vue';
+import MercadoInfo from '../views/MercadoInfo.vue';
+import FincaInfo from '../views/FincaInfo.vue';
+
 // Definimos las rutas de la aplicación
 const routes = [
   { path: '/', component: HomePages }, // Ruta para la página principal
@@ -14,6 +20,11 @@ const routes = [
   { path: '/register', component: RegisterUsers }, // Ruta para la página de registro
   { path: '/welcome/:name', component: WelcomeUsers }, // Ruta de WelcomeUsers
 
+  { path: '/cultivos', component: CultivosInfo },
+  { path: '/noticias', component: NoticiasInfo },
+  { path: '/clima', component: ClimaInfo },
+  { path: '/mercado', component: MercadoInfo },
+  { path: '/finca', component: FincaInfo },
 ];
 
 // Creamos el enrutador con el historial basado en el navegador

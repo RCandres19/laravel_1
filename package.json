@@ -16,9 +16,7 @@
         "vite": "^6.0.11"
     },
     "dependencies": {
-        "@fortawesome/fontawesome-svg-core": "^6.7.2",
-        "@fortawesome/free-solid-svg-icons": "^6.7.2",
-        "@fortawesome/vue-fontawesome": "^3.0.8",
+        "@heroicons/vue": "^2.2.0",
         "@vitejs/plugin-vue": "^5.2.1",
         "pinia": "^3.0.1",
         "sweetalert2": "^11.17.2",
