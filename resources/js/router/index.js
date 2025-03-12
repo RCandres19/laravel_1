@@ -18,13 +18,13 @@ const routes = [
   { path: '/', component: HomePages }, // Ruta para la página principal
   { path: '/login', component: LoginAccess }, // Ruta para la página de inicio de sesión
   { path: '/register', component: RegisterUsers }, // Ruta para la página de registro
-  { path: '/welcome/:name', component: WelcomeUsers }, // Ruta de WelcomeUsers
+  { path: '/welcome/name:', component: WelcomeUsers }, // Ruta de WelcomeUsers
 
-  { path: '/cultivos', component: CultivosInfo },
-  { path: '/noticias', component: NoticiasInfo },
-  { path: '/clima', component: ClimaInfo },
-  { path: '/mercado', component: MercadoInfo },
-  { path: '/finca', component: FincaInfo },
+  { path: '/cultivos',  component: CultivosInfo },
+  { path: '/noticias',  component: NoticiasInfo },
+  { path: '/clima',  component: ClimaInfo },
+  { path: '/mercado',  component: MercadoInfo },
+  { path: '/finca',  component: FincaInfo },
 ];
 
 // Creamos el enrutador con el historial basado en el navegador
