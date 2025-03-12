@@ -13,6 +13,12 @@ import ClimaInfo from '../views/ClimaInfo.vue';
 import MercadoInfo from '../views/MercadoInfo.vue';
 import FincaInfo from '../views/FincaInfo.vue';
 
+import InicioHome from '@/views/InicioHome.vue';
+import PerfilPerso from '@/views/PerfilPerso.vue';
+import ConfiguracionSen from '@/views/ConfiguracionSen.vue';
+import SalirPages from '@/views/SalirPages.vue';
+
+
 // Definimos las rutas de la aplicación
 const routes = [
   { path: '/', component: HomePages }, // Ruta para la página principal
@@ -25,6 +31,11 @@ const routes = [
   { path: '/clima',  component: ClimaInfo },
   { path: '/mercado',  component: MercadoInfo },
   { path: '/finca',  component: FincaInfo },
+
+  { path: '/inicio',  component: InicioHome },
+  { path: '/perfil',  component: PerfilPerso },
+  { path: '/configuracion', component: ConfiguracionSen },
+  { path: '/salir',  component: SalirPages }
 ];
 
 // Creamos el enrutador con el historial basado en el navegador
