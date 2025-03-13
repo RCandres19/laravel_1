@@ -153,7 +153,7 @@ export default defineComponent({
   <!-- Contenedor principal que usa una imagen de fondo dinámica según el tipo seleccionado -->
   <BackgroundImage :tipo="tipoSeleccionado">
     <!-- Barra de navegación superior con menú desplegable -->
-    <NavegaBarra @menu-seleccionado="accionMenu" />
+    <MenuPages @menu-seleccionado="accionMenu" />
     
     <!-- Barra lateral con iconos de navegación -->
     <SidebarLateral @icon-clicked="mostrarInformacion" />
@@ -183,7 +183,7 @@ import { ref } from "vue";
 import { useToggleStore } from "@/store/toggleStore";
 import { storeToRefs } from "pinia";
 import BackgroundImage from "@/components/BackgroundImage.vue";
-import NavegaBarra from "@/components/NavegaBarra.vue";
+import MenuPages from "@/components/MenuPages.vue";
 import SidebarLateral from "@/components/SidebarLateral.vue";
 import ToggleSwitchMc from "@/components/ToggleSwitchMc.vue";
 

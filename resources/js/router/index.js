@@ -13,36 +13,36 @@ import ClimaInfo from '../views/ClimaInfo.vue';
 import MercadoInfo from '../views/MercadoInfo.vue';
 import FincaInfo from '../views/FincaInfo.vue';
 
-import InicioHome from '@/views/InicioHome.vue';
-import PerfilPerso from '@/views/PerfilPerso.vue';
-import ConfiguracionSen from '@/views/ConfiguracionSen.vue';
-import SalirPages from '@/views/SalirPages.vue';
-
+import InicioHome from '../views/InicioHome.vue';
+import PerfilPerso from '../views/PerfilPerso.vue';
+import ConfiguracionSen from '../views/ConfiguracionSen.vue';
+import SalirPages from '../views/SalirPages.vue';
 
 // Definimos las rutas de la aplicación
 const routes = [
-  { path: '/', component: HomePages }, // Ruta para la página principal
-  { path: '/login', component: LoginAccess }, // Ruta para la página de inicio de sesión
-  { path: '/register', component: RegisterUsers }, // Ruta para la página de registro
-  { path: '/welcome/name:', component: WelcomeUsers }, // Ruta de WelcomeUsers
+  { path: '/', component: HomePages }, // Página principal
+  { path: '/login', component: LoginAccess }, // Inicio de sesión
+  { path: '/register', component: RegisterUsers }, // Registro
+  { path: '/welcome/:name', component: WelcomeUsers, name: 'welcome' }, // Ruta dinámica con parámetro
 
-  { path: '/cultivos',  component: CultivosInfo },
-  { path: '/noticias',  component: NoticiasInfo },
-  { path: '/clima',  component: ClimaInfo },
-  { path: '/mercado',  component: MercadoInfo },
-  { path: '/finca',  component: FincaInfo },
+  { path: '/cultivos', component: CultivosInfo, name: 'cultivos' },
+  { path: '/noticias', component: NoticiasInfo, name: 'noticias' },
+  { path: '/clima', component: ClimaInfo, name: 'clima' },
+  { path: '/mercado', component: MercadoInfo, name: 'mercado' },
+  { path: '/finca', component: FincaInfo, name: 'finca' },
 
-  { path: '/inicio',  component: InicioHome },
-  { path: '/perfil',  component: PerfilPerso },
-  { path: '/configuracion', component: ConfiguracionSen },
-  { path: '/salir',  component: SalirPages }
+  { path: '/inicio', component: InicioHome, name: 'inicio' },
+  { path: '/perfil', component: PerfilPerso, name: 'perfil' },
+  { path: '/configuracion', component: ConfiguracionSen, name: 'configuracion' },
+  { path: '/salir', component: SalirPages, name: 'salir' }
 ];
 
 // Creamos el enrutador con el historial basado en el navegador
 const router = createRouter({
-  history: createWebHistory(), // Utiliza el historial de navegación estándar del navegador
-  routes // Pasamos las rutas definidas anteriormente
+  history: createWebHistory(), // Historial de navegación estándar
+  routes // Pasamos las rutas definidas
 });
 
 // Exportamos el enrutador para usarlo en la aplicación
 export default router;
+

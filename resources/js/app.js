@@ -3,32 +3,30 @@
 //createApp(App).mount('#app')
 
 
-import { createApp } from 'vue'; // Importa la función para crear la aplicación Vue
-import App from './App.vue'; // Importa el componente principal de la aplicación
-import router from './router'; // Importa el enrutador de Vue Router
-import './assets/app.css'; // Importa un archivo de estilos globales
-import axios from 'axios'; // Importa Axios para manejar solicitudes HTTP
+import { createApp } from 'vue'; // Importamos Vue
+import App from './App.vue'; // Importamos el componente principal
 
-import { createPinia } from 'pinia'; // Importamos Pinia
+//  PLUGINS Y CONFIGURACIONES 
+import router from './router'; // Importamos Vue Router
+import { createPinia } from 'pinia'; // Importamos Pinia (Estado global)
+import axios from 'axios'; // Importamos Axios para solicitudes HTTP
+import './assets/app.css'; // Importamos los estilos globales
 
-
-// Configuración de la base URL de Axios para que todas las solicitudes apunten a la API de Laravel
+// Configuración de Axios para que todas las solicitudes apunten a la API de Laravel
 axios.defaults.baseURL = 'http://127.0.0.1:8000/api'; 
 
-// Crea la instancia de la aplicación Vue
+// CREACIÓN DE LA APLICACIÓN VUE
 const app = createApp(App);
 
-// Agrega Axios como una propiedad global para que pueda ser accedida desde cualquier componente
+// Agregamos Axios como propiedad global para usarlo en cualquier componente con `this.$axios`
 app.config.globalProperties.$axios = axios;
 
-// Usa Vue Router para manejar la navegación entre páginas
-app.use(router);
+// USAMOS LOS PLUGINS 
+app.use(router); // Habilitamos Vue Router
+app.use(createPinia()); // Habilitamos Pinia para la gestión de estado
 
-// Registra Pinia en la app
-app.use(createPinia()); 
-
-// Monta la aplicación en el elemento con el ID "app" en el archivo HTML
-app.mount('#app');
+// MONTAJE DE LA APP 
+app.mount('#app'); // Montamos la aplicación en el DOM
 
 
 //import './bootstrap';
