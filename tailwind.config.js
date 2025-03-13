@@ -1,12 +1,12 @@
 /** @type {import('tailwindcss').Config} */
 export default {
   content: [
-      './index.html', 
-      './resources/**/*.blade.php', // Asegura que los archivos Blade sean escaneados
-      './resources/**/*.{vue,js,ts,jsx,tsx}',
+    './resources/**/*.blade.php',
+    './resources/**/*.vue',
+    './resources/**/*.js',
   ],
   theme: {
-      extend: {},
+    extend: {},
   },
   plugins: [],
 };
