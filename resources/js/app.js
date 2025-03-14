@@ -7,6 +7,7 @@ import { createApp } from 'vue'; // Importamos Vue
 import App from './App.vue'; // Importamos el componente principal
 
 //  PLUGINS Y CONFIGURACIONES 
+import '../css/app.css'; //Importamos Tailwindcss
 import router from './router'; // Importamos Vue Router
 import { createPinia } from 'pinia'; // Importamos Pinia (Estado global)
 import axios from 'axios'; // Importamos Axios para solicitudes HTTP

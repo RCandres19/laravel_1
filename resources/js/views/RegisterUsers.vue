@@ -136,7 +136,7 @@ const registerUser = async () => {
         <option value="PEP">Permiso Especial de Permanencia</option>
         <option value="CC">Cédula Colombiana</option>
         <option value="TI">Tarjeta de Identidad</option>
-        <option value="Pasaporte">Pasaporte</option>
+        <option value="PP">Pasaporte</option>
       </select>
 
       <!-- Campos de entrada para el usuario -->
@@ -206,9 +206,9 @@ const registerUser = async () => {
     });
 
     // Verifica que el backend devuelva un token
-    if (response.data.token) {
+    if (response.data.access_token) {
       // Guarda el token en localStorage
-      localStorage.setItem('token', response.data.token);
+      localStorage.setItem('token', response.data.access_token);
 
       // Alerta de éxito con SweetAlert2
       Swal.fire({
