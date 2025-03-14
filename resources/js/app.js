@@ -1,42 +1,17 @@
-//import { createApp } from 'vue'
-//import App from './App.vue'
-//createApp(App).mount('#app')
+import { createApp } from 'vue';
+import App from './App.vue';
 
-
-import { createApp } from 'vue'; // Importamos Vue
-import App from './App.vue'; // Importamos el componente principal
-
-//  PLUGINS Y CONFIGURACIONES 
-import '../css/app.css'; //Importamos Tailwindcss
+// 🔹 PLUGINS Y CONFIGURACIONES
+import '../css/app.css'; // Importamos TailwindCSS
 import router from './router'; // Importamos Vue Router
 import { createPinia } from 'pinia'; // Importamos Pinia (Estado global)
-import axios from 'axios'; // Importamos Axios para solicitudes HTTP
-import './assets/app.css'; // Importamos los estilos globales
-
-// Configuración de Axios para que todas las solicitudes apunten a la API de Laravel
-axios.defaults.baseURL = 'http://127.0.0.1:8000/api'; 
-
-// Interceptor para incluir el token en cada solicitud
-axios.interceptors.request.use(
-    (config) => {
-      const token = localStorage.getItem("token");
-      if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
-      }
-      return config;
-    },
-    (error) => {
-      return Promise.reject(error);
-    }
-  );
-  
-  export default axios;
+import AuthService from './services/AuthService'; // Importamos el servicio de autenticación
 
 // CREACIÓN DE LA APLICACIÓN VUE
 const app = createApp(App);
 
-// Agregamos Axios como propiedad global para usarlo en cualquier componente con `this.$axios`
-app.config.globalProperties.$axios = axios;
+// Agregamos Axios globalmente a Vue
+app.config.globalProperties.$axios = AuthService.api;
 
 // USAMOS LOS PLUGINS 
 app.use(router); // Habilitamos Vue Router
@@ -44,6 +19,3 @@ app.use(createPinia()); // Habilitamos Pinia para la gestión de estado
 
 // MONTAJE DE LA APP 
 app.mount('#app'); // Montamos la aplicación en el DOM
-
-
-//import './bootstrap';

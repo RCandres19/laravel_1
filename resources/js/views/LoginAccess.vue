@@ -235,48 +235,44 @@ const login = async () => {
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import { useRouter } from 'vue-router';
-import axios from 'axios';
-import Swal from 'sweetalert2';
-import backgroundImage from '@/assets/img/cultivasena.png';
+import { ref } from "vue";
+import { useRouter } from "vue-router";
+import Swal from "sweetalert2";
+import AuthService from "@/services/AuthService";
+import backgroundImage from "@/assets/img/cultivasena.png";
 
 const router = useRouter();
 
 // Variables reactivas
-const name = ref('');
-const document = ref('');
-const errorMessage = ref('');
+const name = ref("");
+const document = ref("");
+const errorMessage = ref("");
 
 const login = async () => {
   try {
-    // Petición al backend
-    const response = await axios.post('http://127.0.0.1:8000/api/login', {
+    // Llamamos al servicio de autenticación
+    const response = await AuthService.login({
       name: name.value,
-      document: document.value
+      document: document.value,
     });
 
-    // Verifica que la API devuelva un token
-    if (response.data.access_token) {
-      // Guarda el token en localStorage
-      localStorage.setItem('token', response.data.access_token);
+    // Guarda el token en localStorage
+    localStorage.setItem("token", response.access_token);
 
-      // Alerta de éxito
-      Swal.fire({
-        title: 'Ingreso Exitoso',
-        text: `Bienvenido, ${name.value}!`,
-        icon: 'success',
-        confirmButtonColor: '#38af3e'
-      });
+    // Alerta de éxito
+    Swal.fire({
+      title: "Ingreso Exitoso",
+      text: `Bienvenido, ${name.value}!`,
+      icon: "success",
+      confirmButtonColor: "#38af3e",
+    });
 
-      // Redirigir al WelcomeUsers.vue
-      router.push(`/welcome/${name.value}`);
-    } else {
-      errorMessage.value = 'Credenciales incorrectas. Intenta de nuevo.';
-    }
+    // Redirigir al WelcomeUsers.vue
+    router.push(`/welcome/${name.value}`);
   } catch (error) {
-    errorMessage.value = 'Error en la conexión con la API.';
-    console.error('Error en el login:', error);
+    errorMessage.value = "Credenciales incorrectas. Intenta de nuevo.";
+    console.error("Error en el login:", error);
   }
 };
+
 </script>
