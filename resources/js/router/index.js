@@ -18,6 +18,8 @@ import PerfilPerso from '../views/PerfilPerso.vue';
 import ConfiguracionSen from '../views/ConfiguracionSen.vue';
 import SalirPages from '../views/SalirPages.vue';
 
+import ObtenerUsers from '../components/ObtenerUsers.vue';
+
 // Definimos las rutas de la aplicación
 const routes = [
   { path: '/', component: HomePages }, // Página principal
@@ -34,7 +36,9 @@ const routes = [
   { path: '/inicio', component: InicioHome, name: 'inicio' },
   { path: '/perfil', component: PerfilPerso, name: 'perfil' },
   { path: '/configuracion', component: ConfiguracionSen, name: 'configuracion' },
-  { path: '/salir', component: SalirPages, name: 'salir' }
+  { path: '/salir', component: SalirPages, name: 'salir' },
+
+  { path: '/usuarios', component: ObtenerUsers}
 ];
 
 // Creamos el enrutador con el historial basado en el navegador

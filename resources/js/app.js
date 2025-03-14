@@ -15,6 +15,22 @@ import './assets/app.css'; // Importamos los estilos globales
 // Configuración de Axios para que todas las solicitudes apunten a la API de Laravel
 axios.defaults.baseURL = 'http://127.0.0.1:8000/api'; 
 
+// Interceptor para incluir el token en cada solicitud
+axios.interceptors.request.use(
+    (config) => {
+      const token = localStorage.getItem("token");
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
+      return config;
+    },
+    (error) => {
+      return Promise.reject(error);
+    }
+  );
+  
+  export default axios;
+
 // CREACIÓN DE LA APLICACIÓN VUE
 const app = createApp(App);
 
