@@ -2,26 +2,24 @@
 
 namespace App\Models;
 
+use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use Tymon\JWTAuth\Contracts\JWTSubject;
 
-/**
- * Modelo User que representa la tabla 'users' en la base de datos.
- */
-class User extends Model {
-    use HasFactory; // Permite el uso de fábricas para generar datos de prueba.
+class User extends Authenticatable implements JWTSubject
+{
+    use HasFactory;
 
-    /**
-     * @var array $fillable
-     * Define los campos que pueden ser asignados masivamente con métodos como create() o update().
-     * Esto protege contra ataques de asignación masiva.
-     */
     protected $fillable = ['name', 'type_document', 'document', 'email'];
 
-    /**
-     * @var bool $timestamps
-     * Laravel, por defecto, gestiona automáticamente los campos 'created_at' y 'updated_at'.
-     * Si la tabla 'users' no tiene estos campos, es necesario desactivar esta funcionalidad.
-     */
-    // public $timestamps = false; // Cambia a 'true' si la tabla tiene timestamps.
+    // Métodos requeridos por JWTSubject
+    public function getJWTIdentifier()
+    {
+        return $this->getKey();
+    }
+
+    public function getJWTCustomClaims()
+    {
+        return [];
+    }
 }
