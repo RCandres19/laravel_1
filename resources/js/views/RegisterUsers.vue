@@ -1,3 +1,119 @@
+<!--<template> // 14/03/25
+  <div class="relative h-screen flex justify-center items-center overflow-hidden">
+    <!-- Imagen de fondo desenfocada 
+    <div 
+      class="absolute inset-0 bg-cover bg-center blur-sm" 
+      :style="{ backgroundImage: `url(${backgroundImage})` }"
+    ></div>
+
+    <!-- Contenedor del formulario 
+    <div class="relative bg-white bg-opacity-20 backdrop-blur-md p-6 rounded-lg shadow-lg w-80 text-center">
+      <h2 class="text-2xl font-bold text-gray-800">Registro de Usuario</h2>
+
+      <!-- Selección del tipo de documento 
+      <select 
+        v-model="type_document" 
+        class="w-full mt-3 p-2 rounded bg-white bg-opacity-50 focus:ring-2 focus:ring-blue-500"
+      >
+        <option value="" disabled selected>Selecciona un tipo de documento</option>
+        <option value="PPT">Permiso de Protección Temporal</option>
+        <option value="PEP">Permiso Especial de Permanencia</option>
+        <option value="CC">Cédula Colombiana</option>
+        <option value="TI">Tarjeta de Identidad</option>
+        <option value="Pasaporte">Pasaporte</option>
+      </select>
+
+      <!-- Campos de entrada para el usuario 
+      <input 
+        v-model="name" 
+        placeholder="Nombre" 
+        class="w-full mt-3 p-2 rounded bg-white bg-opacity-50 focus:ring-2 focus:ring-blue-500" 
+      />
+      <input 
+        v-model="document" 
+        placeholder="Documento" 
+        class="w-full mt-3 p-2 rounded bg-white bg-opacity-50 focus:ring-2 focus:ring-blue-500" 
+      />
+      <input 
+        v-model="email" 
+        placeholder="Correo (opcional)" 
+        class="w-full mt-3 p-2 rounded bg-white bg-opacity-50 focus:ring-2 focus:ring-blue-500" 
+      />
+
+      <!-- Botón de registro 
+      <button 
+        @click="registerUser" 
+        class="w-full bg-blue-600 text-white py-2 rounded mt-4 hover:bg-blue-700 transition"
+      >
+        Registrarse
+      </button>
+
+      <!-- Mensaje de error 
+      <p v-if="errorMessage" class="text-red-500 mt-2">{{ errorMessage }}</p>
+
+      <!-- Enlace de inicio de sesión 
+      <p class="mt-4 text-sm text-gray-800">
+        ¿Ya tienes cuenta? 
+        <router-link to="/login" class="text-blue-700 font-bold hover:underline">
+          Inicia sesión aquí
+        </router-link>
+      </p>
+    </div>
+  </div>
+</template>
+
+<script setup>
+/**
+ * Importamos las herramientas necesarias:
+ * - `ref` para manejar variables reactivas.
+ * - `useRouter` para la navegación en Vue Router.
+ * - `axios` para hacer peticiones HTTP a la API.
+ * - `Swal` (SweetAlert2) para mostrar alertas estilizadas.
+ */
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+import axios from 'axios';
+import Swal from 'sweetalert2';
+
+// Importa la imagen correctamente
+import backgroundImage from '@/assets/img/cultivasena.png';
+
+const router = useRouter();
+
+/**
+ * Variables reactivas para almacenar los datos del usuario.
+ */
+const name = ref('');
+const type_document = ref('');
+const document = ref('');
+const email = ref('');
+const errorMessage = ref('');
+
+const registerUser = async () => {
+  try {
+    await axios.post('http://127.0.0.1:8000/api/registerUser', {
+      name: name.value,
+      type_document: type_document.value,
+      document: document.value,
+      email: email.value
+    });
+
+    // Alerta de éxito con SweetAlert2
+    Swal.fire({
+      title: 'Registro Exitoso',
+      text: `Bienvenido, ${name.value}!`,
+      icon: 'success',
+      confirmButtonColor: '#1d4ed8'
+    });
+
+    router.push(`/dashboard/${name.value}`);
+  } catch (error) {
+    // Captura errores y muestra un mensaje en caso de fallo
+    errorMessage.value = 'Error en la conexión con la API';
+  }
+};
+</script> -->
+
 <template>
   <div class="relative h-screen flex justify-center items-center overflow-hidden">
     <!-- Imagen de fondo desenfocada -->
@@ -63,13 +179,6 @@
 </template>
 
 <script setup>
-/**
- * Importamos las herramientas necesarias:
- * - `ref` para manejar variables reactivas.
- * - `useRouter` para la navegación en Vue Router.
- * - `axios` para hacer peticiones HTTP a la API.
- * - `Swal` (SweetAlert2) para mostrar alertas estilizadas.
- */
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
@@ -80,9 +189,7 @@ import backgroundImage from '@/assets/img/cultivasena.png';
 
 const router = useRouter();
 
-/**
- * Variables reactivas para almacenar los datos del usuario.
- */
+// Variables reactivas para los datos del usuario
 const name = ref('');
 const type_document = ref('');
 const document = ref('');
@@ -91,29 +198,37 @@ const errorMessage = ref('');
 
 const registerUser = async () => {
   try {
-    await axios.post('http://127.0.0.1:8000/api/registerUser', {
+    const response = await axios.post('http://127.0.0.1:8000/api/registerUser', {
       name: name.value,
       type_document: type_document.value,
       document: document.value,
       email: email.value
     });
 
-    // Alerta de éxito con SweetAlert2
-    Swal.fire({
-      title: 'Registro Exitoso',
-      text: `Bienvenido, ${name.value}!`,
-      icon: 'success',
-      confirmButtonColor: '#1d4ed8'
-    });
+    // Verifica que el backend devuelva un token
+    if (response.data.token) {
+      // Guarda el token en localStorage
+      localStorage.setItem('token', response.data.token);
 
-    router.push(`/dashboard/${name.value}`);
+      // Alerta de éxito con SweetAlert2
+      Swal.fire({
+        title: 'Registro Exitoso',
+        text: `Bienvenido, ${name.value}!`,
+        icon: 'success',
+        confirmButtonColor: '#1d4ed8'
+      });
+
+      // Redirigir al usuario al dashboard
+      router.push(`/welcome/${name.value}`);
+    } else {
+      throw new Error('No se recibió un token en la respuesta.');
+    }
   } catch (error) {
-    // Captura errores y muestra un mensaje en caso de fallo
-    errorMessage.value = 'Error en la conexión con la API';
+    errorMessage.value = 'Error en el registro. Verifica los datos e inténtalo nuevamente.';
+    console.error('Error en el registro:', error);
   }
 };
 </script>
-
 
 
 

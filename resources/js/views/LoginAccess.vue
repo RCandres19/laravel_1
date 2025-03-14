@@ -84,19 +84,19 @@ const login = async () => {
 </style>
 -->
 
-<template>
+<!--<template> 14/03/25
   <div class="relative w-screen h-screen flex justify-center items-center overflow-hidden">
-    <!-- Imagen de fondo desenfocada -->
+    <!-- Imagen de fondo desenfocada --
     <div 
       class="absolute inset-0 bg-cover bg-center blur-md"
       :style="{ backgroundImage: `url(${backgroundImage})` }"
     ></div>
 
-    <!-- Contenedor del formulario de inicio de sesión -->
+    <!-- Contenedor del formulario de inicio de sesión --
     <div class="relative bg-white bg-opacity-20 backdrop-blur-md p-6 rounded-lg shadow-lg w-80 text-center">
       <h2 class="text-2xl font-bold text-gray-800">Login</h2>
 
-      <!-- Campos de entrada para el usuario -->
+      <!-- Campos de entrada para el usuario --
       <input 
         v-model="name" 
         placeholder="Nombre" 
@@ -108,7 +108,7 @@ const login = async () => {
         class="w-full mt-3 p-2 rounded bg-white bg-opacity-50 focus:ring-2 focus:ring-green-500" 
       />
 
-      <!-- Botón de inicio de sesión -->
+      <!-- Botón de inicio de sesión --
       <button 
         @click="login" 
         class="w-full bg-green-600 text-white py-2 rounded mt-4 hover:bg-green-700 transition"
@@ -116,10 +116,10 @@ const login = async () => {
         Ingresar
       </button>
 
-      <!-- Mensaje de error en caso de fallos -->
+      <!-- Mensaje de error en caso de fallos 
       <p v-if="errorMessage" class="text-red-500 mt-2">{{ errorMessage }}</p>
 
-      <!-- Enlace para ir al registro si no tiene cuenta -->
+      <!-- Enlace para ir al registro si no tiene cuenta 
       <p class="mt-4 text-sm text-gray-800">
         ¿No tienes cuenta? 
         <router-link to="/register" class="text-green-700 font-bold hover:underline">
@@ -184,6 +184,99 @@ const login = async () => {
   } catch (error) {
     // Captura errores y muestra un mensaje en caso de fallo en la conexión
     errorMessage.value = 'Error en la conexión con la API';
+  }
+};
+</script> -->
+
+<template>
+  <div class="relative w-screen h-screen flex justify-center items-center overflow-hidden">
+    <!-- Imagen de fondo desenfocada -->
+    <div 
+      class="absolute inset-0 bg-cover bg-center blur-md"
+      :style="{ backgroundImage: `url(${backgroundImage})` }"
+    ></div>
+
+    <!-- Contenedor del formulario de inicio de sesión -->
+    <div class="relative bg-white bg-opacity-20 backdrop-blur-md p-6 rounded-lg shadow-lg w-80 text-center">
+      <h2 class="text-2xl font-bold text-gray-800">Login</h2>
+
+      <!-- Campos de entrada para el usuario -->
+      <input 
+        v-model="name" 
+        placeholder="Nombre" 
+        class="w-full mt-3 p-2 rounded bg-white bg-opacity-50 focus:ring-2 focus:ring-green-500" 
+      />
+      <input 
+        v-model="document" 
+        placeholder="Documento" 
+        class="w-full mt-3 p-2 rounded bg-white bg-opacity-50 focus:ring-2 focus:ring-green-500" 
+      />
+
+      <!-- Botón de inicio de sesión -->
+      <button 
+        @click="login" 
+        class="w-full bg-green-600 text-white py-2 rounded mt-4 hover:bg-green-700 transition"
+      >
+        Ingresar
+      </button>
+
+      <!-- Mensaje de error en caso de fallos -->
+      <p v-if="errorMessage" class="text-red-500 mt-2">{{ errorMessage }}</p>
+
+      <!-- Enlace para ir al registro si no tiene cuenta -->
+      <p class="mt-4 text-sm text-gray-800">
+        ¿No tienes cuenta? 
+        <router-link to="/register" class="text-green-700 font-bold hover:underline">
+          Regístrate aquí
+        </router-link>
+      </p>
+    </div>
+  </div>
+</template>
+
+<script setup>
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+import axios from 'axios';
+import Swal from 'sweetalert2';
+import backgroundImage from '@/assets/img/cultivasena.png';
+
+const router = useRouter();
+
+// Variables reactivas
+const name = ref('');
+const document = ref('');
+const errorMessage = ref('');
+
+const login = async () => {
+  try {
+    // Petición al backend
+    const response = await axios.post('http://127.0.0.1:8000/api/login', {
+      name: name.value,
+      document: document.value
+    });
+
+    // Verifica que la API devuelva un token
+    if (response.data.access_token) {
+      // Guarda el token en localStorage
+      localStorage.setItem('token', response.data.access_token);
+
+      // Alerta de éxito
+      Swal.fire({
+        title: 'Ingreso Exitoso',
+        text: `Bienvenido, ${name.value}!`,
+        icon: 'success',
+        confirmButtonColor: '#38af3e'
+      });
+
+      // Redirigir al WelcomeUsers.vue
+      router.push(`/welcome/${name.value}`);
+    } else {
+      errorMessage.value = 'Credenciales incorrectas. Intenta de nuevo.';
+    }
+  } catch (error) {
+    errorMessage.value = 'Error en la conexión con la API.';
+    console.error('Error en el login:', error);
   }
 };
 </script>

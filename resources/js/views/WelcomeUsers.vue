@@ -179,8 +179,9 @@ export default defineComponent({
  * - `useToggleStore` de Pinia para gestionar el estado global.
  * - `storeToRefs` para acceder a propiedades reactivas del store.
  */
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import { useToggleStore } from "@/store/toggleStore";
+import { useUserStore } from "@/store/userStore";
 import { storeToRefs } from "pinia";
 import BackgroundImage from "@/components/BackgroundImage.vue";
 import MenuPages from "@/components/MenuPages.vue";
@@ -193,17 +194,24 @@ import ToggleSwitchMc from "@/components/ToggleSwitchMc.vue";
 const toggleStore = useToggleStore();
 const { nombre, tipoSeleccionado } = storeToRefs(toggleStore);
 
+const userStore = useUserStore();
+const { userName } = storeToRefs(userStore)
+
 /**
  * Variable reactiva para mostrar información dinámica según la selección del usuario.
  */
-const informacion = ref("Seleccione una opción");
+ const informacion = ref("Seleccione una opción");
+
+ onMounted(() => {
+  userStore.loadUserFromStorage(); // Usa la acción del store
+});
+
 
 /**
  * Maneja la selección en el menú de navegación.
  * @param {string} opcion - Opción seleccionada en el menú.
  */
-const accionMenu = (opcion) => {
-  console.log("Menú seleccionado:", opcion);
+ const accionMenu = (opcion) => {
   informacion.value = `Seleccionaste: ${opcion}`;
 };
 
@@ -211,7 +219,7 @@ const accionMenu = (opcion) => {
  * Cambia entre Mora y Café al activar el interruptor (toggle).
  * También actualiza el mensaje mostrado en pantalla.
  */
-const cambiarTipo = () => {
+ const cambiarTipo = () => {
   toggleStore.toggle(); // Alterna entre Mora y Café
   informacion.value = `Vista de ${tipoSeleccionado.value}`;
 };
@@ -220,8 +228,7 @@ const cambiarTipo = () => {
  * Maneja los clics en los iconos de la barra lateral y actualiza el mensaje mostrado.
  * @param {string} info - Información del icono seleccionado.
  */
-const mostrarInformacion = (info) => {
-  console.log("Icono seleccionado:", info);
+ const mostrarInformacion = (info) => {
   informacion.value = info;
 };
 </script>

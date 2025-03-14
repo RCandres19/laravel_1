@@ -23,7 +23,7 @@ const routes = [
   { path: '/', component: HomePages }, // Página principal
   { path: '/login', component: LoginAccess }, // Inicio de sesión
   { path: '/register', component: RegisterUsers }, // Registro
-  { path: '/welcome/:name', component: WelcomeUsers, name: 'welcome' }, // Ruta dinámica con parámetro
+  { path: '/welcome/:name', component: WelcomeUsers, name: 'welcome', meta:{requiresAuth: true} }, // Ruta protegida con parámetro
 
   { path: '/cultivos', component: CultivosInfo, name: 'cultivos' },
   { path: '/noticias', component: NoticiasInfo, name: 'noticias' },
@@ -41,6 +41,16 @@ const routes = [
 const router = createRouter({
   history: createWebHistory(), // Historial de navegación estándar
   routes // Pasamos las rutas definidas
+});
+
+//Protegemos rutas que requieren autenticacion
+router.beforeEach((to, from, next) => {
+  const token = localStorage.getItem('token');
+  if (to.meta.requiresAuth && !token) {
+    next('/login');
+  } else {
+    next();
+  }
 });
 
 // Exportamos el enrutador para usarlo en la aplicación
