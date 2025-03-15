@@ -256,23 +256,27 @@ const login = async () => {
       document: document.value,
     });
 
-    // Guarda el token en localStorage
-    localStorage.setItem("token", response.access_token);
+    if (response.data && response.data.access_token) {
+      // Guarda el token en localStorage
+      localStorage.setItem("token", response.data.access_token);
 
-    // Alerta de éxito
-    Swal.fire({
-      title: "Ingreso Exitoso",
-      text: `Bienvenido, ${name.value}!`,
-      icon: "success",
-      confirmButtonColor: "#38af3e",
-    });
+      // Alerta de éxito
+      Swal.fire({
+        title: "Ingreso Exitoso",
+        text: `Bienvenido, ${name.value}!`,
+        icon: "success",
+        confirmButtonColor: "#38af3e",
+      });
 
-    // Redirigir al WelcomeUsers.vue
-    router.push(`/welcome/${name.value}`);
+      // Redirigir al WelcomeUsers.vue
+      router.push(`/welcome/${name.value}`);
+    } else {
+      throw new Error("Token no recibido en la respuesta.");
+    }
   } catch (error) {
     errorMessage.value = "Credenciales incorrectas. Intenta de nuevo.";
-    console.error("Error en el login:", error);
+
+    console.error("Error en el login:", error.response?.data || error.message);
   }
 };
-
 </script>

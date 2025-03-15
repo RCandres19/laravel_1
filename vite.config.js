@@ -6,25 +6,24 @@ import path from 'path';
 export default defineConfig({
     plugins: [
         laravel({
-            input: ['resources/css/app.css', 'resources/js/app.js'],
-            refresh: true,
+            input: ['resources/css/app.css', 'resources/js/app.js'], // Archivos de entrada principales
+            refresh: true, // Habilita la recarga automática en Laravel
         }),
-        vue(),
+        vue(), // Habilita Vue.js en el proyecto
     ],
     resolve: {
         alias: {
-            '@': path.resolve(__dirname, 'resources/js'),
+            '@': path.resolve(__dirname, 'resources/js'), // Define '@' como alias de la carpeta de Vue.js
         },
     },
     css: {
-        postcss: {},
+        postcss: {}, // Permite procesar estilos con PostCSS
     },
     server: {
-        host: 'localhost',
-        port: 5173,
+        host: 'localhost', // Servidor local
+        port: 5173, // Puerto en el que corre Vite
         watch: {
-            usePolling: true,
+            usePolling: true, // Asegura la detección de cambios en entornos con sistemas de archivos problemáticos (WSL, Docker, etc.)
         },
     },
 });
-

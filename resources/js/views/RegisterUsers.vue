@@ -179,25 +179,37 @@ const registerUser = async () => {
 </template>
 
 <script setup>
+/**
+ * Importaciones necesarias
+ */
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 
-// Importa la imagen correctamente
+// Importa la imagen de fondo
 import backgroundImage from '@/assets/img/cultivasena.png';
 
+/**
+ * Instancia del enrutador de Vue
+ */
 const router = useRouter();
 
-// Variables reactivas para los datos del usuario
-const name = ref('');
-const type_document = ref('');
-const document = ref('');
-const email = ref('');
-const errorMessage = ref('');
+/**
+ * Variables reactivas para los datos del usuario
+ */
+const name = ref(''); // Nombre del usuario
+const type_document = ref(''); // Tipo de documento
+const document = ref(''); // Número de documento
+const email = ref(''); // Correo electrónico (opcional)
+const errorMessage = ref(''); // Mensaje de error en caso de fallos
 
+/**
+ * Función para registrar un usuario en la API
+ */
 const registerUser = async () => {
   try {
+    // Enviar datos al backend
     const response = await axios.post('http://127.0.0.1:8000/api/registerUser', {
       name: name.value,
       type_document: type_document.value,
@@ -205,12 +217,12 @@ const registerUser = async () => {
       email: email.value
     });
 
-    // Verifica que el backend devuelva un token
+    // Verifica si el backend devuelve un token de acceso
     if (response.data.access_token) {
-      // Guarda el token en localStorage
+      // Guarda el token en localStorage para futuras autenticaciones
       localStorage.setItem('token', response.data.access_token);
 
-      // Alerta de éxito con SweetAlert2
+      // Muestra una alerta de éxito con SweetAlert2
       Swal.fire({
         title: 'Registro Exitoso',
         text: `Bienvenido, ${name.value}!`,
@@ -218,17 +230,19 @@ const registerUser = async () => {
         confirmButtonColor: '#1d4ed8'
       });
 
-      // Redirigir al usuario al dashboard
+      // Redirigir al usuario a la página de bienvenida
       router.push(`/welcome/${name.value}`);
     } else {
       throw new Error('No se recibió un token en la respuesta.');
     }
   } catch (error) {
+    // Captura cualquier error y lo muestra al usuario
     errorMessage.value = 'Error en el registro. Verifica los datos e inténtalo nuevamente.';
     console.error('Error en el registro:', error);
   }
 };
 </script>
+
 
 
 

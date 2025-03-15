@@ -1,16 +1,24 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Configuración del documento -->
+    <meta charset="UTF-8"> <!-- Define la codificación de caracteres -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Permite diseño responsivo -->
+    
+    <!-- Título de la aplicación -->
     <title>Laravel + Vue</title>
+
+    <!-- Carga de archivos JS y CSS usando Vite -->
     @vite(['resources/js/app.js', 'resources/css/app.css'])
+
+    <!-- Favicon opcional -->
+    <link rel="icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
 </head>
-<body>
+<body class="bg-gray-100 text-gray-900"> 
+    <!-- Contenedor principal donde Vue.js se montará dinámicamente -->
     <div id="app"></div>
 </body>
 </html>
-
 
 <!--<!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">

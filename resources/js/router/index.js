@@ -1,7 +1,7 @@
-// Importamos las funciones necesarias desde 'vue-router' para crear el enrutador
+// Importamos las funciones necesarias de 'vue-router'
 import { createRouter, createWebHistory } from 'vue-router';
 
-// Importamos los componentes de las vistas que usaremos en las rutas
+// Importamos los componentes de las vistas
 import HomePages from '../views/HomePages.vue';
 import LoginAccess from '../views/LoginAccess.vue';
 import RegisterUsers from '../views/RegisterUsers.vue';
@@ -20,43 +20,51 @@ import SalirPages from '../views/SalirPages.vue';
 
 import ObtenerUsers from '../components/ObtenerUsers.vue';
 
+// Función para verificar si el usuario está autenticado
+const isAuthenticated = () => !!localStorage.getItem('token');
+
 // Definimos las rutas de la aplicación
 const routes = [
   { path: '/', component: HomePages }, // Página principal
-  { path: '/login', component: LoginAccess }, // Inicio de sesión
-  { path: '/register', component: RegisterUsers }, // Registro
-  { path: '/welcome/:name', component: WelcomeUsers, name: 'welcome', meta:{requiresAuth: true} }, // Ruta protegida con parámetro
+  { path: '/login', component: LoginAccess, meta: { requiresGuest: true } }, // Inicio de sesión
+  { path: '/register', component: RegisterUsers, meta: { requiresGuest: true } }, // Registro
+  { path: '/welcome/:name', component: WelcomeUsers, name: 'welcome', meta: { requiresAuth: true } }, // Ruta protegida
 
-  { path: '/cultivos', component: CultivosInfo, name: 'cultivos' },
-  { path: '/noticias', component: NoticiasInfo, name: 'noticias' },
-  { path: '/clima', component: ClimaInfo, name: 'clima' },
-  { path: '/mercado', component: MercadoInfo, name: 'mercado' },
-  { path: '/finca', component: FincaInfo, name: 'finca' },
+  { path: '/cultivos', component: CultivosInfo, name: 'cultivos', meta: { requiresAuth: true } },
+  { path: '/noticias', component: NoticiasInfo, name: 'noticias', meta: { requiresAuth: true } },
+  { path: '/clima', component: ClimaInfo, name: 'clima', meta: { requiresAuth: true } },
+  { path: '/mercado', component: MercadoInfo, name: 'mercado', meta: { requiresAuth: true } },
+  { path: '/finca', component: FincaInfo, name: 'finca', meta: { requiresAuth: true } },
 
-  { path: '/inicio', component: InicioHome, name: 'inicio' },
-  { path: '/perfil', component: PerfilPerso, name: 'perfil' },
-  { path: '/configuracion', component: ConfiguracionSen, name: 'configuracion' },
-  { path: '/salir', component: SalirPages, name: 'salir' },
+  { path: '/inicio', component: InicioHome, name: 'inicio', meta: { requiresAuth: true } },
+  { path: '/perfil', component: PerfilPerso, name: 'perfil', meta: { requiresAuth: true } },
+  { path: '/configuracion', component: ConfiguracionSen, name: 'configuracion', meta: { requiresAuth: true } },
+  { path: '/salir', component: SalirPages, name: 'salir', meta: { requiresAuth: true } },
 
-  { path: '/usuarios', component: ObtenerUsers}
+  { path: '/usuarios', component: ObtenerUsers, meta: { requiresAuth: true } }
 ];
 
-// Creamos el enrutador con el historial basado en el navegador
+// Creamos el enrutador con historial basado en el navegador
 const router = createRouter({
-  history: createWebHistory(), // Historial de navegación estándar
-  routes // Pasamos las rutas definidas
+  history: createWebHistory(),
+  routes
 });
 
-//Protegemos rutas que requieren autenticacion
+// Protección de rutas
 router.beforeEach((to, from, next) => {
-  const token = localStorage.getItem('token');
+  const token = isAuthenticated();
+
+  // Si la ruta requiere autenticación y el usuario no está autenticado
   if (to.meta.requiresAuth && !token) {
-    next('/login');
+    next({ path: '/login', query: { redirect: to.fullPath } }); // Guarda la ruta a la que intentaba acceder
+  }
+  // Si la ruta es solo para invitados y el usuario ya está autenticado
+  else if (to.meta.requiresGuest && token) {
+    next({ path: `/welcome/${localStorage.getItem('userName')}` });
   } else {
-    next();
+    next(); // Si no hay restricciones, procede normalmente
   }
 });
 
-// Exportamos el enrutador para usarlo en la aplicación
+// Exportamos el enrutador
 export default router;
-

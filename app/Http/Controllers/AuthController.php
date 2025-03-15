@@ -8,13 +8,19 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Support\Facades\Log;
 
 class AuthController extends Controller
 {
-    // Método para registrar un nuevo usuario
+    /**
+     * Registra un nuevo usuario en la base de datos.
+     * 
+     * @param Request $request Contiene los datos del usuario a registrar.
+     * @return \Illuminate\Http\JsonResponse Respuesta con el usuario creado y los tokens.
+     */
     public function register(Request $request)
     {
-        // Validamos los datos recibidos
+        // Validar los datos del usuario
         $validator = Validator::make($request->all(), [
             'name'          => 'required|string|max:255',
             'type_document' => 'required|string',
@@ -23,7 +29,7 @@ class AuthController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['error' => $validator->errors()], 400);
+            return response()->json(['error' => $validator->errors()], Response::HTTP_BAD_REQUEST);
         }
 
         try {
@@ -35,7 +41,7 @@ class AuthController extends Controller
                 'email'         => $request->email
             ]);
 
-            // Generar tokens
+            // Generar tokens de acceso y refresco
             $accessToken = JWTAuth::fromUser($user);
             $refreshToken = JWTAuth::claims(['refresh' => true])->fromUser($user);
 
@@ -48,20 +54,31 @@ class AuthController extends Controller
             ], Response::HTTP_CREATED)
             ->cookie('refresh_token', $refreshToken, 43200, '/', null, true, true); // 30 días
         } catch (\Exception $e) {
-            return response()->json([
-                'error'   => 'No se pudo registrar el usuario',
-                'message' => $e->getMessage()
-            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+            Log::error('Error al registrar usuario: ' . $e->getMessage());
+            return response()->json(['error' => 'No se pudo registrar el usuario'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
-    // Método para iniciar sesión
+    /**
+     * Inicia sesión con `name` y `document`, generando tokens JWT.
+     * 
+     * @param Request $request Contiene el nombre y documento del usuario.
+     * @return \Illuminate\Http\JsonResponse Respuesta con el token de acceso.
+     */
     public function login(Request $request)
     {
-        $name = $request->input('name');
-        $document = $request->input('document');
+        // Validar la entrada
+        $validator = Validator::make($request->all(), [
+            'name'     => 'required|string',
+            'document' => 'required|string',
+        ]);
 
-        $user = User::where('name', $name)->where('document', $document)->first();
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], Response::HTTP_BAD_REQUEST);
+        }
+
+        // Buscar usuario
+        $user = User::where('name', $request->name)->where('document', $request->document)->first();
 
         if (!$user) {
             return response()->json([
@@ -71,7 +88,7 @@ class AuthController extends Controller
         }
 
         try {
-            // Generar tokens
+            // Generar tokens de acceso y refresco
             $accessToken = JWTAuth::fromUser($user);
             $refreshToken = JWTAuth::claims(['refresh' => true])->fromUser($user);
 
@@ -82,48 +99,61 @@ class AuthController extends Controller
                 'token_type'   => 'bearer',
                 'expires_in'   => JWTAuth::factory()->getTTL() * 60
             ])
-            ->cookie('refresh_token', $refreshToken, 43200, '/', null, true, true); // 30 días
+            ->cookie('refresh_token', $refreshToken, 43200, '/', null, true, true);
         } catch (JWTException $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'No se pudo crear el token',
-                'error'   => $e->getMessage()
-            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+            Log::error('Error al generar token de inicio de sesión: ' . $e->getMessage());
+            return response()->json(['message' => 'Error en la autenticación'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
-    // Método para refrescar el Access Token usando el Refresh Token
+    /**
+     * Refresca el Access Token usando el Refresh Token almacenado en la cookie.
+     * 
+     * @param Request $request Contiene la cookie con el Refresh Token.
+     * @return \Illuminate\Http\JsonResponse Respuesta con el nuevo token de acceso.
+     */
     public function refreshToken(Request $request)
-{
-    try {
-        $refreshToken = $request->cookie('refresh_token');
+    {
+        try {
+            $refreshToken = $request->cookie('refresh_token');
 
-        if (!$refreshToken) {
-            return response()->json(['error' => 'Refresh Token no encontrado'], Response::HTTP_UNAUTHORIZED);
+            if (!$refreshToken) {
+                return response()->json(['error' => 'Refresh Token no encontrado'], Response::HTTP_UNAUTHORIZED);
+            }
+
+            $payload = JWTAuth::setToken($refreshToken)->getPayload();
+
+            // Verificar si es un token de refresco válido
+            if (!$payload->get('refresh')) {
+                return response()->json(['error' => 'Token inválido'], Response::HTTP_UNAUTHORIZED);
+            }
+
+            // Obtener usuario desde el token
+            $user = JWTAuth::setToken($refreshToken)->toUser();
+            if (!$user) {
+                return response()->json(['error' => 'Usuario no encontrado'], Response::HTTP_UNAUTHORIZED);
+            }
+
+            // Generar nuevos tokens
+            $newAccessToken = JWTAuth::fromUser($user);
+            $newRefreshToken = JWTAuth::claims(['refresh' => true])->fromUser($user);
+
+            return response()->json([
+                'access_token' => $newAccessToken,
+                'token_type'   => 'bearer',
+                'expires_in'   => JWTAuth::factory()->getTTL() * 60
+            ])->cookie('refresh_token', $newRefreshToken, 43200, '/', null, true, true);
+        } catch (JWTException $e) {
+            Log::error('Error al refrescar token: ' . $e->getMessage());
+            return response()->json(['error' => 'No se pudo refrescar el token'], Response::HTTP_UNAUTHORIZED);
         }
-
-        // Obtener usuario desde el refresh token
-        $user = JWTAuth::setToken($refreshToken)->toUser();
-        if (!$user) {
-            return response()->json(['error' => 'Refresh Token inválido'], Response::HTTP_UNAUTHORIZED);
-        }
-
-        // Generar nuevos tokens
-        $newAccessToken = JWTAuth::fromUser($user);
-        $newRefreshToken = JWTAuth::claims(['refresh' => true])->fromUser($user);
-
-        return response()->json([
-            'access_token' => $newAccessToken,
-            'token_type'   => 'bearer',
-            'expires_in'   => JWTAuth::factory()->getTTL() * 60
-        ])->cookie('refresh_token', $newRefreshToken, 43200, '/', null, true, true);
-    } catch (JWTException $e) {
-        return response()->json(['error' => 'No se pudo refrescar el token'], Response::HTTP_UNAUTHORIZED);
     }
-}
 
-
-    // Método para obtener la información del usuario autenticado
+    /**
+     * Obtiene la información del usuario autenticado.
+     * 
+     * @return \Illuminate\Http\JsonResponse Respuesta con la información del usuario.
+     */
     public function me()
     {
         try {
@@ -133,15 +163,29 @@ class AuthController extends Controller
         }
     }
 
-    // Método para cerrar sesión e invalidar los tokens
+    /**
+     * Cierra sesión del usuario, invalidando los tokens.
+     * 
+     * @return \Illuminate\Http\JsonResponse Respuesta de éxito si se cerró sesión correctamente.
+     */
     public function logout()
     {
         try {
-            JWTAuth::invalidate(JWTAuth::getToken());
+            $accessToken = JWTAuth::getToken();
+            $refreshToken = request()->cookie('refresh_token');
+
+            if ($accessToken) {
+                JWTAuth::invalidate($accessToken);
+            }
+
+            if ($refreshToken) {
+                JWTAuth::setToken($refreshToken)->invalidate();
+            }
 
             return response()->json(['message' => 'Sesión cerrada con éxito'])
-                ->cookie('refresh_token', '', -1); // Eliminar cookie
+                ->cookie('refresh_token', '', -1); // Eliminar la cookie del Refresh Token
         } catch (JWTException $e) {
+            Log::error('Error al cerrar sesión: ' . $e->getMessage());
             return response()->json(['message' => 'Error al cerrar sesión'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }

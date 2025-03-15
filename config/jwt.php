@@ -1,27 +1,27 @@
 <?php
 
 /*
- * This file is part of jwt-auth.
+ * Este archivo es parte de jwt-auth.
  *
  * (c) Sean Tymon <tymon148@gmail.com>
  *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ * Para obtener la información completa sobre derechos de autor y licencia,
+ * consulta el archivo LICENSE distribuido con esta fuente.
  */
 
 return [
 
     /*
     |--------------------------------------------------------------------------
-    | JWT Authentication Secret
+    | Secreto de Autenticación JWT
     |--------------------------------------------------------------------------
     |
-    | Don't forget to set this in your .env file, as it will be used to sign
-    | your tokens. A helper command is provided for this:
+    | No olvides establecer esto en tu archivo .env, ya que se usará para
+    | firmar tus tokens. Hay un comando de ayuda para esto:
     | `php artisan jwt:secret`
     |
-    | Note: This will be used for Symmetric algorithms only (HMAC),
-    | since RSA and ECDSA use a private/public key combo (See below).
+    | Nota: Esto se usará solo para algoritmos simétricos (HMAC),
+    | ya que RSA y ECDSA usan una combinación de clave pública/privada.
     |
     */
 
@@ -29,18 +29,18 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | JWT Authentication Keys
+    | Claves de Autenticación JWT
     |--------------------------------------------------------------------------
     |
-    | The algorithm you are using, will determine whether your tokens are
-    | signed with a random string (defined in `JWT_SECRET`) or using the
-    | following public & private keys.
+    | El algoritmo que uses determinará si tus tokens están firmados con una
+    | cadena aleatoria (definida en `JWT_SECRET`) o con las siguientes claves
+    | pública y privada.
     |
-    | Symmetric Algorithms:
-    | HS256, HS384 & HS512 will use `JWT_SECRET`.
+    | Algoritmos Simétricos:
+    | HS256, HS384 y HS512 usarán `JWT_SECRET`.
     |
-    | Asymmetric Algorithms:
-    | RS256, RS384 & RS512 / ES256, ES384 & ES512 will use the keys below.
+    | Algoritmos Asimétricos:
+    | RS256, RS384 y RS512 / ES256, ES384 y ES512 usarán las claves a continuación.
     |
     */
 
@@ -48,12 +48,12 @@ return [
 
         /*
         |--------------------------------------------------------------------------
-        | Public Key
+        | Clave Pública
         |--------------------------------------------------------------------------
         |
-        | A path or resource to your public key.
+        | Una ruta o recurso a tu clave pública.
         |
-        | E.g. 'file://path/to/public/key'
+        | Ejemplo: 'file://ruta/a/la/clave/publica'
         |
         */
 
@@ -61,12 +61,12 @@ return [
 
         /*
         |--------------------------------------------------------------------------
-        | Private Key
+        | Clave Privada
         |--------------------------------------------------------------------------
         |
-        | A path or resource to your private key.
+        | Una ruta o recurso a tu clave privada.
         |
-        | E.g. 'file://path/to/private/key'
+        | Ejemplo: 'file://ruta/a/la/clave/privada'
         |
         */
 
@@ -74,10 +74,10 @@ return [
 
         /*
         |--------------------------------------------------------------------------
-        | Passphrase
+        | Contraseña de la Clave Privada
         |--------------------------------------------------------------------------
         |
-        | The passphrase for your private key. Can be null if none set.
+        | La contraseña de tu clave privada. Puede ser null si no hay ninguna.
         |
         */
 
@@ -87,36 +87,32 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | JWT time to live
+    | Tiempo de Vida del Token JWT
     |--------------------------------------------------------------------------
     |
-    | Specify the length of time (in minutes) that the token will be valid for.
-    | Defaults to 1 hour.
+    | Especifica la duración (en minutos) que el token será válido.
+    | Por defecto es 1 hora.
     |
-    | You can also set this to null, to yield a never expiring token.
-    | Some people may want this behaviour for e.g. a mobile app.
-    | This is not particularly recommended, so make sure you have appropriate
-    | systems in place to revoke the token if necessary.
-    | Notice: If you set this to null you should remove 'exp' element from 'required_claims' list.
+    | También puedes establecer esto en null para que el token nunca expire.
+    | No se recomienda, pero algunas aplicaciones móviles lo usan.
+    |
+    | Nota: Si estableces esto en null, debes eliminar el elemento 'exp'
+    | de la lista 'required_claims'.
     |
     */
 
-    'ttl' => env('JWT_TTL', 5), //lo cambios por 5 minutos para solo prueba
+    'ttl' => env('JWT_TTL', 5), // Cambiado a 5 minutos solo para prueba
 
     /*
     |--------------------------------------------------------------------------
-    | Refresh time to live
+    | Tiempo de Vida para Refrescar el Token
     |--------------------------------------------------------------------------
     |
-    | Specify the length of time (in minutes) that the token can be refreshed
-    | within. I.E. The user can refresh their token within a 2 week window of
-    | the original token being created until they must re-authenticate.
-    | Defaults to 2 weeks.
+    | Especifica la duración (en minutos) en la que el token puede ser refrescado.
+    | Es decir, el usuario puede actualizar su token dentro de este período antes
+    | de que tenga que autenticarse nuevamente.
     |
-    | You can also set this to null, to yield an infinite refresh time.
-    | Some may want this instead of never expiring tokens for e.g. a mobile app.
-    | This is not particularly recommended, so make sure you have appropriate
-    | systems in place to revoke the token if necessary.
+    | Por defecto, es de 2 semanas (20160 minutos).
     |
     */
 
@@ -124,10 +120,10 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | JWT hashing algorithm
+    | Algoritmo de Hashing JWT
     |--------------------------------------------------------------------------
     |
-    | Specify the hashing algorithm that will be used to sign the token.
+    | Especifica el algoritmo de hashing que se utilizará para firmar el token.
     |
     */
 
@@ -135,34 +131,29 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Required Claims
+    | Claims Requeridos
     |--------------------------------------------------------------------------
     |
-    | Specify the required claims that must exist in any token.
-    | A TokenInvalidException will be thrown if any of these claims are not
-    | present in the payload.
+    | Especifica los claims que deben existir en cada token.
+    | Si falta alguno, se lanzará una excepción TokenInvalidException.
     |
     */
 
     'required_claims' => [
-        'iss',
-        'iat',
-        'exp',
-        'nbf',
-        'sub',
-        'jti',
+        'iss', // Emisor
+        'iat', // Fecha de emisión
+        'exp', // Fecha de expiración
+        'nbf', // No válido antes de
+        'sub', // Usuario autenticado
+        'jti', // Identificador único del token
     ],
 
     /*
     |--------------------------------------------------------------------------
-    | Persistent Claims
+    | Claims Persistentes
     |--------------------------------------------------------------------------
     |
-    | Specify the claim keys to be persisted when refreshing a token.
-    | `sub` and `iat` will automatically be persisted, in
-    | addition to the these claims.
-    |
-    | Note: If a claim does not exist then it will be ignored.
+    | Especifica qué claims deben persistir cuando se refresca un token.
     |
     */
 
@@ -173,18 +164,11 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Lock Subject
+    | Bloquear el Sujeto
     |--------------------------------------------------------------------------
     |
-    | This will determine whether a `prv` claim is automatically added to
-    | the token. The purpose of this is to ensure that if you have multiple
-    | authentication models e.g. `App\User` & `App\OtherPerson`, then we
-    | should prevent one authentication request from impersonating another,
-    | if 2 tokens happen to have the same id across the 2 different models.
-    |
-    | Under specific circumstances, you may want to disable this behaviour
-    | e.g. if you only have one authentication model, then you would save
-    | a little on token size.
+    | Determina si un claim 'prv' se agrega automáticamente al token.
+    | Esto evita que múltiples modelos de autenticación compartan el mismo ID.
     |
     */
 
@@ -192,16 +176,13 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Leeway
+    | Margen de Tolerancia (Leeway)
     |--------------------------------------------------------------------------
     |
-    | This property gives the jwt timestamp claims some "leeway".
-    | Meaning that if you have any unavoidable slight clock skew on
-    | any of your servers then this will afford you some level of cushioning.
+    | Permite un margen de tiempo para los claims de tiempo del JWT
+    | (`iat`, `nbf`, `exp`) para compensar pequeñas diferencias de reloj.
     |
-    | This applies to the claims `iat`, `nbf` and `exp`.
-    |
-    | Specify in seconds - only if you know you need it.
+    | Se especifica en segundos.
     |
     */
 
@@ -209,26 +190,25 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Blacklist Enabled
+    | Habilitar Lista Negra
     |--------------------------------------------------------------------------
     |
-    | In order to invalidate tokens, you must have the blacklist enabled.
-    | If you do not want or need this functionality, then set this to false.
+    | Para invalidar tokens, debes habilitar la lista negra.
+    | Si no necesitas esta funcionalidad, establece esto en false.
     |
     */
 
     'blacklist_enabled' => env('JWT_BLACKLIST_ENABLED', true),
 
     /*
-    | -------------------------------------------------------------------------
-    | Blacklist Grace Period
-    | -------------------------------------------------------------------------
+    |--------------------------------------------------------------------------
+    | Período de Gracia para Lista Negra
+    |--------------------------------------------------------------------------
     |
-    | When multiple concurrent requests are made with the same JWT,
-    | it is possible that some of them fail, due to token regeneration
-    | on every request.
+    | Evita que las solicitudes paralelas fallen si el token se regenera
+    | en cada petición.
     |
-    | Set grace period in seconds to prevent parallel request failure.
+    | Se especifica en segundos.
     |
     */
 
@@ -236,28 +216,10 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Cookies encryption
+    | Proveedores
     |--------------------------------------------------------------------------
     |
-    | By default Laravel encrypt cookies for security reason.
-    | If you decide to not decrypt cookies, you will have to configure Laravel
-    | to not encrypt your cookie token by adding its name into the $except
-    | array available in the middleware "EncryptCookies" provided by Laravel.
-    | see https://laravel.com/docs/master/responses#cookies-and-encryption
-    | for details.
-    |
-    | Set it to true if you want to decrypt cookies.
-    |
-    */
-
-    'decrypt_cookies' => false,
-
-    /*
-    |--------------------------------------------------------------------------
-    | Providers
-    |--------------------------------------------------------------------------
-    |
-    | Specify the various providers used throughout the package.
+    | Especifica los proveedores utilizados en el paquete.
     |
     */
 
@@ -265,10 +227,10 @@ return [
 
         /*
         |--------------------------------------------------------------------------
-        | JWT Provider
+        | Proveedor JWT
         |--------------------------------------------------------------------------
         |
-        | Specify the provider that is used to create and decode the tokens.
+        | Especifica el proveedor que se usa para crear y decodificar tokens.
         |
         */
 
@@ -276,10 +238,10 @@ return [
 
         /*
         |--------------------------------------------------------------------------
-        | Authentication Provider
+        | Proveedor de Autenticación
         |--------------------------------------------------------------------------
         |
-        | Specify the provider that is used to authenticate users.
+        | Especifica el proveedor utilizado para autenticar usuarios.
         |
         */
 
@@ -287,10 +249,10 @@ return [
 
         /*
         |--------------------------------------------------------------------------
-        | Storage Provider
+        | Proveedor de Almacenamiento
         |--------------------------------------------------------------------------
         |
-        | Specify the provider that is used to store tokens in the blacklist.
+        | Especifica el proveedor que almacena tokens en la lista negra.
         |
         */
 
