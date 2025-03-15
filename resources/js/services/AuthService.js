@@ -50,16 +50,6 @@ const AuthService = {
   },
 };
 
-const obtenerUsuarios = async () => {
-  try {
-    const respuesta = await AuthService.api.get("/users") // Usamos el axios configurado de AuthService
-    obtenerUsuarios.value = respuesta.data;
-    console.log(" Usuarios obtenidos: ", obtenerUsuarios.value);
-  } catch (error) {
-    console.error(" Error al obtener usuarios: ", error.response?.data || error.message);
-  }
-};
-
 // **Interceptores para manejar el token automáticamente**
 AuthService.api.interceptors.request.use(
   async (config) => {

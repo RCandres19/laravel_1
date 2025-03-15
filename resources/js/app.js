@@ -1,7 +1,7 @@
 import { createApp } from 'vue';
 import App from './App.vue';
 
-// 🔹 PLUGINS Y CONFIGURACIONES
+// PLUGINS Y CONFIGURACIONES
 import '../css/app.css'; // Importamos TailwindCSS
 import router from './router'; // Importamos Vue Router
 import { createPinia } from 'pinia'; // Importamos Pinia (Estado global)

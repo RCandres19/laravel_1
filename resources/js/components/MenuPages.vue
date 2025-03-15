@@ -59,11 +59,12 @@ const rutasMenu = [
     { name: "Salir", path: "/salir" },
 ];
 
+//console.log("API URL:", import.meta.env.VITE_API_URL);  //para ver si la URL es correcta. Si imprime undefined, Vue no está leyendo bien la variable
+
 /**
  *  Alterna la visibilidad del menú hamburguesa
  */
 const toggleMenu = () => {
-    console.log(import.meta.env.VITE_API_URL);  //para ver si la URL es correcta. Si imprime undefined, Vue no está leyendo bien la variable
     menuAbierto.value = !menuAbierto.value;
 };
 

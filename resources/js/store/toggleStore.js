@@ -1,17 +1,3 @@
-//import { defineStore } from 'pinia';
-
-//export const useToggleStore = defineStore('toggle', {
-  //state: () => ({
-    //isCafe: false, // Estado inicial: Mora
-  //}),
-  //actions: {
-    //toggle() {
-      //this.isCafe = !this.isCafe;
-    //},
-  //},
-//});
-
-
 import { defineStore } from "pinia";
 export const useToggleStore = defineStore("toggle", {
   state: () => ({

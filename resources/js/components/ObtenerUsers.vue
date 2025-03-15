@@ -6,11 +6,11 @@ const usuarios = ref([]);
 
 const obtenerUsuarios = async () => {
   try {
-    const respuesta = await axios.get("/users"); // Ajusta la ruta según tu API
-    usuarios.value = respuesta.data;
-    console.log("Usuarios obtenidos:", usuarios.value);
+    const respuesta = await AuthService.api.get("/users") // Usamos el axios configurado de AuthService
+    obtenerUsuarios.value = respuesta.data;
+    console.log(" Usuarios obtenidos: ", obtenerUsuarios.value);
   } catch (error) {
-    console.error("Error al obtener usuarios:", error.response?.data || error.message);
+    console.error(" Error al obtener usuarios: ", error.response?.data || error.message);
   }
 };
 

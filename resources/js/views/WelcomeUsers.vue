@@ -187,6 +187,7 @@ import BackgroundImage from "@/components/BackgroundImage.vue";
 import MenuPages from "@/components/MenuPages.vue";
 import SidebarLateral from "@/components/SidebarLateral.vue";
 import ToggleSwitchMc from "@/components/ToggleSwitchMc.vue";
+import ObtenerUsers from "@/components/ObtenerUsers.vue";
 
 /**
  * Obtenemos el estado global de Pinia para manejar el tipo de vista (Mora/Café) y el nombre del usuario.
