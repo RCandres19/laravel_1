@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "http://127.0.0.1:8000/api";
+const API_URL = import.meta.env.VITE_API_URL; // Se obtiene la URL desde .env
 
 const AuthService = {
   // Configuración de Axios con credenciales habilitadas para manejar cookies
@@ -48,6 +48,16 @@ const AuthService = {
       throw error;
     }
   },
+};
+
+const obtenerUsuarios = async () => {
+  try {
+    const respuesta = await AuthService.api.get("/users") // Usamos el axios configurado de AuthService
+    obtenerUsuarios.value = respuesta.data;
+    console.log(" Usuarios obtenidos: ", obtenerUsuarios.value);
+  } catch (error) {
+    console.error(" Error al obtener usuarios: ", error.response?.data || error.message);
+  }
 };
 
 // **Interceptores para manejar el token automáticamente**

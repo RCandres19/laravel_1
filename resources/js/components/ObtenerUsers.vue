@@ -1,5 +1,5 @@
 <script setup>
-import axios from "@/app"; // Importa axios configurado
+import AuthService from "@/services/AuthService"; // Importamos el servicio de autenticacion
 import { ref, onMounted } from "vue";
 
 const usuarios = ref([]);

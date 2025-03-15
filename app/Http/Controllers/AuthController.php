@@ -94,27 +94,34 @@ class AuthController extends Controller
 
     // Método para refrescar el Access Token usando el Refresh Token
     public function refreshToken(Request $request)
-    {
-        try {
-            $refreshToken = $request->cookie('refresh_token');
+{
+    try {
+        $refreshToken = $request->cookie('refresh_token');
 
-            if (!$refreshToken) {
-                return response()->json(['error' => 'Refresh Token no encontrado'], Response::HTTP_UNAUTHORIZED);
-            }
-
-            $newAccessToken = JWTAuth::refresh($refreshToken);
-            $newRefreshToken = JWTAuth::claims(['refresh' => true])->fromUser(JWTAuth::setToken($refreshToken)->toUser());
-
-            return response()->json([
-                'access_token' => $newAccessToken,
-                'token_type'   => 'bearer',
-                'expires_in'   => JWTAuth::factory()->getTTL() * 60
-            ])
-            ->cookie('refresh_token', $newRefreshToken, 43200, '/', null, true, true); // Renovar cookie
-        } catch (JWTException $e) {
-            return response()->json(['error' => 'No se pudo refrescar el token'], Response::HTTP_UNAUTHORIZED);
+        if (!$refreshToken) {
+            return response()->json(['error' => 'Refresh Token no encontrado'], Response::HTTP_UNAUTHORIZED);
         }
+
+        // Obtener usuario desde el refresh token
+        $user = JWTAuth::setToken($refreshToken)->toUser();
+        if (!$user) {
+            return response()->json(['error' => 'Refresh Token inválido'], Response::HTTP_UNAUTHORIZED);
+        }
+
+        // Generar nuevos tokens
+        $newAccessToken = JWTAuth::fromUser($user);
+        $newRefreshToken = JWTAuth::claims(['refresh' => true])->fromUser($user);
+
+        return response()->json([
+            'access_token' => $newAccessToken,
+            'token_type'   => 'bearer',
+            'expires_in'   => JWTAuth::factory()->getTTL() * 60
+        ])->cookie('refresh_token', $newRefreshToken, 43200, '/', null, true, true);
+    } catch (JWTException $e) {
+        return response()->json(['error' => 'No se pudo refrescar el token'], Response::HTTP_UNAUTHORIZED);
     }
+}
+
 
     // Método para obtener la información del usuario autenticado
     public function me()

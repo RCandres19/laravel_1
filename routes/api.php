@@ -5,8 +5,8 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request; 
 
-// Rutas protegidas con middleware 'jwt.auth'
-Route::middleware('jwt.auth')->group(function () {
+// Rutas protegidas con middleware 'jwt.auth' y 'refresh.token'
+Route::middleware(['jwt.auth', 'refresh.token'])->group(function () {
     Route::get('/me', [AuthController::class, 'me']); // Datos del usuario autenticado
 
     // Ruta alternativa para obtener usuario autenticado (Laravel)

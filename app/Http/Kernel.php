@@ -38,5 +38,6 @@ class Kernel extends HttpKernel
         'auth' => \App\Http\Middleware\Authenticate::class, // Middleware de autenticación
         'auth:api' => \App\Http\Middleware\Authenticate::class, //utilizando el middleware estándar de Laravel.
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class, // Limita la cantidad de solicitudes permitidas por usuario
+        'refresh.token' => \App\Http\Middleware\RefreshTokenMiddleware::class, // Agregamos este RefreshTokenMiddleware.php para proteger las rutas 
     ];
 }
