@@ -210,7 +210,7 @@ const errorMessage = ref(''); // Mensaje de error en caso de fallos
 const registerUser = async () => {
   try {
     // Enviar datos al backend
-    const response = await axios.post('http://127.0.0.1:8000/api/registerUser', {
+    const response = await axios.post('http://127.0.0.1:8000/api/register', {
       name: name.value,
       type_document: type_document.value,
       document: document.value,

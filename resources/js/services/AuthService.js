@@ -1,8 +1,7 @@
 import axios from "axios";
-import { useRouter } from "vue-router";
+import router from "@/router"; // Asegúrate de importar el router
 
-const API_URL = import.meta.env.VITE_API_URL; // Se obtiene la URL desde .env
-const router = useRouter(); // Inicializa Vue Router
+const API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000/api"; // Se obtiene la URL desde .env
 
 const AuthService = {
   // Configuración de Axios con credenciales habilitadas para manejar cookies
@@ -17,13 +16,13 @@ const AuthService = {
   // Función para iniciar sesión
   async login(credentials) {
     try {
-      const response = await this.api.post("/login", credentials);
+      const response = await AuthService.api.post("/login", credentials);
       const { access_token } = response.data;
 
-      localStorage.setItem("token", access_token); // Guarda el token en localStorage
+      localStorage.setItem("token", access_token); // Guarda el token en localStorage     
       return response.data;
     } catch (error) {
-      console.error("Error en login:", error);
+      console.error("❌ Error en login:", error.response?.data || error.message);
       throw error;
     }
   },
@@ -31,9 +30,9 @@ const AuthService = {
   // Función para cerrar sesión
   async logout() {
     try {
-      await this.api.post("/logout");
+      await AuthService.api.post("/logout");
     } catch (error) {
-      console.error("Error en logout:", error);
+      console.error("❌ Error en logout:", error.response?.data || error.message);
     } finally {
       // Eliminamos todos los datos de autenticación
       localStorage.removeItem("token");
@@ -44,13 +43,17 @@ const AuthService = {
   // Función para refrescar el token
   async refreshToken() {
     try {
-      const response = await this.api.post("/refresh-token");
-      const { access_token } = response.data;
-      localStorage.setItem("token", access_token); // Actualiza el token
-      return access_token;
+      console.log("🔄 Intentando refrescar el token...");
+      const response = await AuthService.api.post("/refresh-token", {}, { withCredentials: true });
+
+      if (response.data.access_token) {
+        console.log("✅ Token refrescado con éxito:", response.data.access_token);
+        localStorage.setItem("token", response.data.access_token); // Guardar el nuevo token
+        return response.data.access_token;
+      }  
     } catch (error) {
-      console.error("Error al refrescar el token:", error);
-      await this.logout(); // Cierra sesión si falla el refresh
+      console.error("❌ Error al refrescar el token:", error.response?.data || error.message);
+      await AuthService.logout(); // Cierra sesión si falla el refresh
       throw error;
     }
   },
@@ -83,7 +86,7 @@ AuthService.api.interceptors.response.use(
         originalRequest.headers.Authorization = `Bearer ${newToken}`;
         return AuthService.api(originalRequest); // Reintenta la petición original
       } catch (refreshError) {
-        console.error("No se pudo refrescar el token:", refreshError);
+        console.error("❌ No se pudo refrescar el token:", refreshError);
         return Promise.reject(refreshError);
       }
     }

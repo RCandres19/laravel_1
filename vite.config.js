@@ -25,5 +25,15 @@ export default defineConfig({
         watch: {
             usePolling: true, // Asegura la detección de cambios en entornos con sistemas de archivos problemáticos (WSL, Docker, etc.)
         },
+        plugins: [vue()],
+        server: {
+            proxy: {
+                "/api": {
+                    target: "http://127.0.0.1:8000", //URL de Laravel
+                    changeOrigin: true,
+                    secure: false,
+                }
+            }
+        }
     },
 });

@@ -113,41 +113,54 @@ class AuthController extends Controller
      * @return \Illuminate\Http\JsonResponse Respuesta con el nuevo token de acceso.
      */
     public function refreshToken(Request $request)
-    {
-        try {
-            $refreshToken = $request->cookie('refresh_token');
+{
+    try {
+        $refreshToken = $request->cookie('refresh_token');
 
-            if (!$refreshToken) {
-                return response()->json(['error' => 'Refresh Token no encontrado'], Response::HTTP_UNAUTHORIZED);
-            }
-
-            $payload = JWTAuth::setToken($refreshToken)->getPayload();
-
-            // Verificar si es un token de refresco válido
-            if (!$payload->get('refresh')) {
-                return response()->json(['error' => 'Token inválido'], Response::HTTP_UNAUTHORIZED);
-            }
-
-            // Obtener usuario desde el token
-            $user = JWTAuth::setToken($refreshToken)->toUser();
-            if (!$user) {
-                return response()->json(['error' => 'Usuario no encontrado'], Response::HTTP_UNAUTHORIZED);
-            }
-
-            // Generar nuevos tokens
-            $newAccessToken = JWTAuth::fromUser($user);
-            $newRefreshToken = JWTAuth::claims(['refresh' => true])->fromUser($user);
-
-            return response()->json([
-                'access_token' => $newAccessToken,
-                'token_type'   => 'bearer',
-                'expires_in'   => JWTAuth::factory()->getTTL() * 60
-            ])->cookie('refresh_token', $newRefreshToken, 43200, '/', null, true, true);
-        } catch (JWTException $e) {
-            Log::error('Error al refrescar token: ' . $e->getMessage());
-            return response()->json(['error' => 'No se pudo refrescar el token'], Response::HTTP_UNAUTHORIZED);
+        if (!$refreshToken) {
+            return response()->json(['error' => 'Refresh Token no encontrado'], Response::HTTP_UNAUTHORIZED);
         }
+
+        $payload = JWTAuth::setToken($refreshToken)->getPayload();
+
+        // Verificar si el token contiene la claim 'refresh'
+        if (!$payload->get('refresh')) {
+            return response()->json(['error' => 'Token inválido'], Response::HTTP_UNAUTHORIZED);
+        }
+
+        // Obtener el usuario desde el token
+        $user = JWTAuth::setToken($refreshToken)->toUser();
+        if (!$user) {
+            return response()->json(['error' => 'Usuario no encontrado'], Response::HTTP_UNAUTHORIZED);
+        }
+
+        // Generar nuevos tokens
+        $newAccessToken = JWTAuth::fromUser($user);
+        $newRefreshToken = JWTAuth::claims(['refresh' => true])->fromUser($user);
+
+        // Enviar el nuevo refresh token en la cookie y también en la respuesta JSON
+        return response()->json([
+            'access_token'   => $newAccessToken,
+            'refresh_token'  => $newRefreshToken, // Para debug, se puede eliminar después
+            'token_type'     => 'bearer',
+            'expires_in'     => JWTAuth::factory()->getTTL() * 60
+        ])->cookie(
+            'refresh_token',
+            $newRefreshToken,
+            43200, // 30 días
+            '/',
+            '127.0.0.1',   // Ruta
+            //null,  // Dominio (prueba con null si estás en localhost)
+            true, // HTTPS solo en producción
+            true   // httpOnly
+        );
+
+    } catch (JWTException $e) {
+        Log::error('Error al refrescar token: ' . $e->getMessage());
+        return response()->json(['error' => 'No se pudo refrescar el token'], Response::HTTP_UNAUTHORIZED);
     }
+}
+
 
     /**
      * Obtiene la información del usuario autenticado.

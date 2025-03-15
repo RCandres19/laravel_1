@@ -26,7 +26,7 @@ import { ref } from "vue";
 
 /**
  * Estado del interruptor:
- * - `false` → Modo Mora 🌱
+ * - `false` → Modo Mora 
  * - `true` → Modo Café ☕
  */
 const activo = ref(false);

@@ -46,6 +46,9 @@
 <script setup>
 import { ref } from "vue";
 import { useRouter } from "vue-router";
+import AuthService from "@/services/AuthService.js"
+
+window.AuthService = AuthService;
 
 //  INSTANCIAS Y ESTADOS
 const router = useRouter(); // Instancia de Vue Router
@@ -60,6 +63,7 @@ const rutasMenu = [
 ];
 
 //console.log("API URL:", import.meta.env.VITE_API_URL);  //para ver si la URL es correcta. Si imprime undefined, Vue no está leyendo bien la variable
+
 
 /**
  *  Alterna la visibilidad del menú hamburguesa

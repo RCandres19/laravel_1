@@ -43,7 +43,5 @@ class Kernel extends HttpKernel
         'auth:api'       => \App\Http\Middleware\Authenticate::class, // Autenticación para API con `auth:api`
         'throttle'       => \Illuminate\Routing\Middleware\ThrottleRequests::class, // Limita solicitudes por usuario para evitar abuso
         'refresh.token'  => \App\Http\Middleware\RefreshTokenMiddleware::class, // Middleware para refrescar tokens JWT automáticamente
-        'jwt.auth'       => \Tymon\JWTAuth\Http\Middleware\Authenticate::class, // Middleware de autenticación con JWT
-        'jwt.refresh'    => \Tymon\JWTAuth\Http\Middleware\RefreshToken::class, // Middleware para refrescar tokens JWT
     ];
 }

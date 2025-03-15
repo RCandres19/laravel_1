@@ -95,7 +95,7 @@ Route::post('/login', [AuthController::class, 'login']);
  * Ruta: /refresh-token
  * Controlador: AuthController@refreshToken
  */
-Route::post('/refresh-token', [AuthController::class, 'refreshToken']);
+Route::post('/refresh-token', [AuthController::class, 'refresh'])->middleware('auth:api'); //Esto usará JWT para verificar el usuario automáticamente
 
 /**
  * Cierra la sesión del usuario y revoca el token JWT.

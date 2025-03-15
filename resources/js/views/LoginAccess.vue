@@ -248,6 +248,9 @@ const name = ref("");
 const document = ref("");
 const errorMessage = ref("");
 
+
+
+
 const login = async () => {
   try {
     // Llamamos al servicio de autenticación
@@ -256,7 +259,7 @@ const login = async () => {
       document: document.value,
     });
 
-    if (response.data && response.data.access_token) {
+    if (response.data.access_token) {
       // Guarda el token en localStorage
       localStorage.setItem("token", response.data.access_token);
 

@@ -5,7 +5,8 @@ import App from './App.vue';
 import '../css/app.css'; // Importamos TailwindCSS
 import router from './router'; // Importamos Vue Router
 import { createPinia } from 'pinia'; // Importamos Pinia (Estado global)
-import AuthService from './services/AuthService'; // Importamos el servicio de autenticación
+import AuthService from '@/services/AuthService'; // Importamos el servicio de autenticación
+import "./services/AuthBootstrap"; // Esto ejecuta automáticamente el código
 
 // CREACIÓN DE LA APLICACIÓN VUE
 const app = createApp(App);
