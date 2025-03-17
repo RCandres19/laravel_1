@@ -1,26 +1,22 @@
 import axios from "axios";
-import router from "@/router"; // Asegúrate de importar el router
+import router from "@/router"; // Importa el router
 
 const API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000/api"; // Se obtiene la URL desde .env
 
 const AuthService = {
-  // Configuración de Axios con credenciales habilitadas para manejar cookies
+  // Configuración de Axios
   api: axios.create({
     baseURL: API_URL,
-    headers: {
-      "Content-Type": "application/json",
-    },
-    withCredentials: true, // Permite enviar cookies (para el refresh token)
+    headers: { "Content-Type": "application/json" },
   }),
 
   // Función para iniciar sesión
-  async login(credentials) {
+  async login() {
     try {
-      const response = await AuthService.api.post("/login", credentials);
+      const response = await AuthService.api.post("/login");
       const { access_token } = response.data;
-
-      localStorage.setItem("token", access_token); // Guarda el token en localStorage     
-      return response.data;
+      localStorage.setItem("token", access_token);
+      return access_token;
     } catch (error) {
       console.error("❌ Error en login:", error.response?.data || error.message);
       throw error;
@@ -34,9 +30,8 @@ const AuthService = {
     } catch (error) {
       console.error("❌ Error en logout:", error.response?.data || error.message);
     } finally {
-      // Eliminamos todos los datos de autenticación
       localStorage.removeItem("token");
-      router.push("/login"); // Redirige al login después de cerrar sesión
+      router.push("/"); // Redirige al HomePages
     }
   },
 
@@ -44,16 +39,15 @@ const AuthService = {
   async refreshToken() {
     try {
       console.log("🔄 Intentando refrescar el token...");
-      const response = await AuthService.api.post("/refresh-token", {}, { withCredentials: true });
-
+      const response = await AuthService.api.post("/refreshToken", {}, { withCredentials: true });
       if (response.data.access_token) {
-        console.log("✅ Token refrescado con éxito:", response.data.access_token);
-        localStorage.setItem("token", response.data.access_token); // Guardar el nuevo token
+        console.log("✅ Token refrescado:", response.data.access_token);
+        localStorage.setItem("token", response.data.access_token);
         return response.data.access_token;
-      }  
+      }
     } catch (error) {
       console.error("❌ Error al refrescar el token:", error.response?.data || error.message);
-      await AuthService.logout(); // Cierra sesión si falla el refresh
+      await AuthService.logout();
       throw error;
     }
   },
@@ -77,22 +71,30 @@ AuthService.api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    // Si el error es por token expirado y no hemos intentado refrescarlo antes
-    if (error.response?.status === 401 && !originalRequest._retry) {
-      originalRequest._retry = true; // Marca el intento para evitar bucles infinitos
+    if (error.response?.status === 401) {
+      console.error(" Token inválido o expirado.");
 
-      try {
-        const newToken = await AuthService.refreshToken();
-        originalRequest.headers.Authorization = `Bearer ${newToken}`;
-        return AuthService.api(originalRequest); // Reintenta la petición original
-      } catch (refreshError) {
-        console.error("❌ No se pudo refrescar el token:", refreshError);
-        return Promise.reject(refreshError);
+      if (originalRequest.url.includes("/refreshToken")) {
+        console.error(" El intento de refresh falló. Cerrando sesión...");
+        await AuthService.logout(); // Cerrar sesión si el refresh falla
+        return Promise.reject(error);
+      }
+
+      if (!originalRequest._retry) {
+        originalRequest._retry = true;
+        try {
+          const newToken = await AuthService.refreshToken();
+          originalRequest.headers.Authorization = `Bearer ${newToken}`;
+          return AuthService.api(originalRequest);
+        } catch (refreshError) {
+          return Promise.reject(refreshError);
+        }
       }
     }
 
     return Promise.reject(error);
   }
 );
+
 
 export default AuthService;

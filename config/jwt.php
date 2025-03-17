@@ -101,7 +101,7 @@ return [
     |
     */
 
-    'ttl' => env('JWT_TTL', 30), // Cambiado a 30 minutos solo para prueba
+    'ttl' => env('JWT_TTL', 5), // Cambiado a 5 minutos solo para prueba
 
     /*
     |--------------------------------------------------------------------------
@@ -116,7 +116,7 @@ return [
     |
     */
 
-    'refresh_ttl' => env('JWT_REFRESH_TTL', 20160),
+    'refresh_ttl' => env('JWT_REFRESH_TTL', 20160), // 14 días
 
     /*
     |--------------------------------------------------------------------------

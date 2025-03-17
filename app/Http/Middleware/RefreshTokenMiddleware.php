@@ -12,7 +12,7 @@ use Symfony\Component\HttpFoundation\Response;
 class RefreshTokenMiddleware
 {
     /**
-     * Middleware para verificar y refrescar tokens JWT si es necesario.
+     * Middleware para verificar si el token es válido o ha expirado.
      *
      * @param Request $request La solicitud HTTP entrante.
      * @param Closure $next La siguiente acción a ejecutar en la aplicación.
@@ -24,13 +24,11 @@ class RefreshTokenMiddleware
             // Intentar autenticar al usuario con el token
             JWTAuth::parseToken()->authenticate();
         } catch (TokenExpiredException $e) {
-            // Si el token ha expirado, informar que se necesita un refresh
+            // Si el token ha expirado, redirigir a la ruta que refresca el token
             return response()->json([
-                'message' => 'Token expirado, se requiere refresh',
-                'refresh_required' => true
+                'message' => 'Token expirado, refresca el token en /api/refreshToken',
             ], Response::HTTP_UNAUTHORIZED);
         } catch (JWTException $e) {
-            // Si hay otro problema con el token (ausente o inválido)
             return response()->json([
                 'message' => 'Token inválido o ausente',
                 'error'   => $e->getMessage()

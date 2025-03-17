@@ -200,30 +200,35 @@ const login = async () => {
     <div class="relative bg-white bg-opacity-20 backdrop-blur-md p-6 rounded-lg shadow-lg w-80 text-center">
       <h2 class="text-2xl font-bold text-gray-800">Login</h2>
 
-      <!-- Campos de entrada para el usuario -->
-      <input 
-        v-model="name" 
-        placeholder="Nombre" 
-        class="w-full mt-3 p-2 rounded bg-white bg-opacity-50 focus:ring-2 focus:ring-green-500" 
-      />
-      <input 
-        v-model="document" 
-        placeholder="Documento" 
-        class="w-full mt-3 p-2 rounded bg-white bg-opacity-50 focus:ring-2 focus:ring-green-500" 
-      />
+      <form @submit.prevent="login">
+        <!-- Campos de entrada -->
+        <input 
+          v-model.trim="name" 
+          placeholder="Nombre" 
+          class="w-full mt-3 p-2 rounded bg-white bg-opacity-50 focus:ring-2 focus:ring-green-500" 
+          required
+        />
+        <input 
+          v-model.trim="document" 
+          placeholder="Documento" 
+          class="w-full mt-3 p-2 rounded bg-white bg-opacity-50 focus:ring-2 focus:ring-green-500" 
+          required
+        />
 
-      <!-- Botón de inicio de sesión -->
-      <button 
-        @click="login" 
-        class="w-full bg-green-600 text-white py-2 rounded mt-4 hover:bg-green-700 transition"
-      >
-        Ingresar
-      </button>
+        <!-- Botón de inicio de sesión -->
+        <button 
+          type="submit"
+          class="w-full bg-green-600 text-white py-2 rounded mt-4 hover:bg-green-700 transition"
+          :disabled="loading"
+        >
+          {{ loading ? "Ingresando..." : "Ingresar" }}
+        </button>
+      </form>
 
-      <!-- Mensaje de error en caso de fallos -->
+      <!-- Mensaje de error -->
       <p v-if="errorMessage" class="text-red-500 mt-2">{{ errorMessage }}</p>
 
-      <!-- Enlace para ir al registro si no tiene cuenta -->
+      <!-- Enlace para registrarse -->
       <p class="mt-4 text-sm text-gray-800">
         ¿No tienes cuenta? 
         <router-link to="/register" class="text-green-700 font-bold hover:underline">
@@ -247,20 +252,27 @@ const router = useRouter();
 const name = ref("");
 const document = ref("");
 const errorMessage = ref("");
-
-
-
+const loading = ref(false);
 
 const login = async () => {
+  if (!name.value || !document.value) {
+    errorMessage.value = "Por favor ingrese todos los campos.";
+    return;
+  }
+
+  loading.value = true;
+  errorMessage.value = "";
+
   try {
-    // Llamamos al servicio de autenticación
     const response = await AuthService.login({
-      name: name.value,
-      document: document.value,
+      name: name.value.trim(),
+      document: document.value.trim(),
     });
 
     if (response.data.access_token) {
-      // Guarda el token en localStorage
+      console.log("✅ Token recibido:", response.data.access_token);
+
+      // Guardar el token en localStorage o Vuex/Pinia si lo implementas
       localStorage.setItem("token", response.data.access_token);
 
       // Alerta de éxito
@@ -271,15 +283,16 @@ const login = async () => {
         confirmButtonColor: "#38af3e",
       });
 
-      // Redirigir al WelcomeUsers.vue
-      router.push(`/welcome/${name.value}`);
+      // Redirigir a la página de bienvenida
+      router.push("/welcome");
     } else {
       throw new Error("Token no recibido en la respuesta.");
     }
   } catch (error) {
-    errorMessage.value = "Credenciales incorrectas. Intenta de nuevo.";
-
-    console.error("Error en el login:", error.response?.data || error.message);
+    errorMessage.value = error.response?.data?.message || "Credenciales incorrectas. Intenta de nuevo.";
+    console.error("❌ Error en el login:", error.response?.data || error.message);
+  } finally {
+    loading.value = false;
   }
 };
 </script>
