@@ -243,10 +243,11 @@ const login = async () => {
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 import Swal from "sweetalert2";
-import AuthService from "@/services/AuthService";
+import { useAuthStore } from "@/stores/AuthStore"; // Importando Pinia Store
 import backgroundImage from "@/assets/img/cultivasena.png";
 
 const router = useRouter();
+const authStore = useAuthStore(); // Instancia de Pinia
 
 // Variables reactivas
 const name = ref("");
@@ -264,30 +265,21 @@ const login = async () => {
   errorMessage.value = "";
 
   try {
-    const response = await AuthService.login({
+    await authStore.login({
       name: name.value.trim(),
       document: document.value.trim(),
     });
 
-    if (response.data.access_token) {
-      console.log("✅ Token recibido:", response.data.access_token);
+    // Alerta de éxito
+    Swal.fire({
+      title: "Ingreso Exitoso",
+      text: `Bienvenido, ${name.value}!`,
+      icon: "success",
+      confirmButtonColor: "#38af3e",
+    });
 
-      // Guardar el token en localStorage o Vuex/Pinia si lo implementas
-      localStorage.setItem("token", response.data.access_token);
-
-      // Alerta de éxito
-      Swal.fire({
-        title: "Ingreso Exitoso",
-        text: `Bienvenido, ${name.value}!`,
-        icon: "success",
-        confirmButtonColor: "#38af3e",
-      });
-
-      // Redirigir a la página de bienvenida
-      router.push("/welcome");
-    } else {
-      throw new Error("Token no recibido en la respuesta.");
-    }
+    // Redirigir a la página de bienvenida
+    router.push("/welcome");
   } catch (error) {
     errorMessage.value = error.response?.data?.message || "Credenciales incorrectas. Intenta de nuevo.";
     console.error("❌ Error en el login:", error.response?.data || error.message);

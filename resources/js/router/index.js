@@ -1,44 +1,35 @@
-// Importamos las funciones necesarias de 'vue-router'
 import { createRouter, createWebHistory } from "vue-router";
-import { isAuthenticated } from "@/utils/auth"; // Mover la lógica a un archivo externo
+import { useAuthStore } from "@/stores/AuthStore"; // Usamos Pinia en lugar de isAuthenticated
 
 // Importamos los componentes de las vistas
-import HomePages from "../views/HomePages.vue";
-import LoginAccess from "../views/LoginAccess.vue";
-import RegisterUsers from "../views/RegisterUsers.vue";
-import WelcomeUsers from "../views/WelcomeUsers.vue";
-
-import CultivosInfo from "../views/CultivosInfo.vue";
-import NoticiasInfo from "../views/NoticiasInfo.vue";
-import ClimaInfo from "../views/ClimaInfo.vue";
-import MercadoInfo from "../views/MercadoInfo.vue";
-import FincaInfo from "../views/FincaInfo.vue";
-
-import InicioHome from "../views/InicioHome.vue";
-import PerfilPerso from "../views/PerfilPerso.vue";
-import ConfiguracionSen from "../views/ConfiguracionSen.vue";
-import SalirPages from "../views/SalirPages.vue";
-
-import ObtenerUsers from "../components/ObtenerUsers.vue";
+import HomePages from "@/views/HomePages.vue";
+import LoginAccess from "@/views/LoginAccess.vue";
+import RegisterUsers from "@/views/RegisterUsers.vue";
+import WelcomeUsers from "@/views/WelcomeUsers.vue";
+import CultivosInfo from "@/views/CultivosInfo.vue";
+import NoticiasInfo from "@/views/NoticiasInfo.vue";
+import ClimaInfo from "@/views/ClimaInfo.vue";
+import FinancieroInfo from "@/views/Financiero.vue";
+import InicioHome from "@/views/InicioHome.vue";
+import PerfilPerso from "@/views/PerfilPerso.vue";
+import ConfiguracionSen from "@/views/ConfiguracionSen.vue";
+import SalirPages from "@/views/SalirPages.vue";
+import ObtenerUsers from "@/components/ObtenerUsers.vue";
 
 // Definimos las rutas de la aplicación
 const routes = [
   { path: "/", component: HomePages },
   { path: "/login", component: LoginAccess, meta: { requiresGuest: true } },
   { path: "/register", component: RegisterUsers, meta: { requiresGuest: true } },
-  { path: "/welcome", component: WelcomeUsers, name: "welcome", meta: { requiresAuth: true } },
-
-  { path: "/cultivos", component: CultivosInfo, name: "cultivos", meta: { requiresAuth: true } },
-  { path: "/noticias", component: NoticiasInfo, name: "noticias", meta: { requiresAuth: true } },
-  { path: "/clima", component: ClimaInfo, name: "clima", meta: { requiresAuth: true } },
-  { path: "/mercado", component: MercadoInfo, name: "mercado", meta: { requiresAuth: true } },
-  { path: "/finca", component: FincaInfo, name: "finca", meta: { requiresAuth: true } },
-
-  { path: "/inicio", component: InicioHome, name: "inicio", meta: { requiresAuth: true } },
-  { path: "/perfil", component: PerfilPerso, name: "perfil", meta: { requiresAuth: true } },
-  { path: "/configuracion", component: ConfiguracionSen, name: "configuracion", meta: { requiresAuth: true } },
-  { path: "/salir", component: SalirPages, name: "salir", meta: { requiresAuth: true } },
-
+  { path: "/welcome", component: WelcomeUsers, meta: { requiresAuth: true } },
+  { path: "/cultivos", component: CultivosInfo, meta: { requiresAuth: true } },
+  { path: "/noticias", component: NoticiasInfo, meta: { requiresAuth: true } },
+  { path: "/clima", component: ClimaInfo, meta: { requiresAuth: true } },
+  { path: "/financiero", component: FinancieroInfo, meta: { requiresAuth: true } },
+  { path: "/inicio", component: InicioHome, meta: { requiresAuth: true } },
+  { path: "/perfil", component: PerfilPerso, meta: { requiresAuth: true } },
+  { path: "/configuracion", component: ConfiguracionSen, meta: { requiresAuth: true } },
+  { path: "/salir", component: SalirPages, meta: { requiresAuth: true } },
   { path: "/usuarios", component: ObtenerUsers, meta: { requiresAuth: true } },
 ];
 
@@ -50,16 +41,15 @@ const router = createRouter({
 
 // Protección de rutas con beforeEach
 router.beforeEach((to, from, next) => {
-  const token = isAuthenticated();
+  const authStore = useAuthStore(); // Obtenemos la tienda de autenticación
+  const token = authStore.token; // Obtenemos el token desde Pinia
 
   if (to.meta.requiresAuth && !token) {
-    // Si la ruta requiere autenticación y no hay token, redirige a login
     next({ path: "/login", query: { redirect: to.fullPath } });
   } else if (to.meta.requiresGuest && token) {
-    // Si la ruta es solo para invitados y el usuario ya está autenticado
     next({ path: "/welcome" });
   } else {
-    next(); // Si no hay restricciones, procede normalmente
+    next();
   }
 });
 

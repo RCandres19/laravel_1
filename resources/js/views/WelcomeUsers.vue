@@ -150,21 +150,26 @@ export default defineComponent({
 </style>  -->
 
 <template>
-  <!-- Contenedor principal que usa una imagen de fondo dinámica según el tipo seleccionado -->
+  <!-- Contenedor principal con imagen de fondo dinámica -->
   <BackgroundImage :tipo="tipoSeleccionado">
-    <!-- Barra de navegación superior con menú desplegable -->
+    <!-- Barra de navegación superior -->
     <MenuPages @menu-seleccionado="accionMenu" />
     
-    <!-- Barra lateral con iconos de navegación -->
+    <!-- Barra lateral con iconos -->
     <SidebarLateral @icon-clicked="mostrarInformacion" />
     
-    <!-- Toggle para cambiar entre "Mora" y "Café" -->
+    <!-- Interruptor para cambiar entre "Mora" y "Café" -->
     <ToggleSwitchMc @toggle-cambiado="cambiarTipo" />
 
-    <!-- Cuadro central con mensaje de bienvenida y la información seleccionada -->
-    <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white bg-opacity-80 p-6 rounded-lg shadow-lg text-center">
-      <h1 class="text-2xl font-bold">Bienvenido, {{ nombre }}</h1>
+    <!-- Cuadro central con mensaje de bienvenida e información -->
+    <div 
+      class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 
+             bg-white bg-opacity-80 p-6 rounded-lg shadow-lg text-center"
+    >
+      <h1 class="text-2xl font-bold">Bienvenido, {{ userName || 'Invitado' }}</h1>
       <p class="text-gray-700 mt-2">{{ informacion }}</p>
+      
+      <!-- Vista dinámica según la ruta -->
       <div class="contenido">
         <router-view/>
       </div>
@@ -173,63 +178,46 @@ export default defineComponent({
 </template>
 
 <script setup>
-/**
- * Importamos las herramientas y componentes necesarios:
- * - `ref` para manejar estados reactivos.
- * - `useToggleStore` de Pinia para gestionar el estado global.
- * - `storeToRefs` para acceder a propiedades reactivas del store.
- */
-import { ref, onMounted } from "vue";
+import { ref, onMounted, nextTick } from "vue";
 import { useToggleStore } from "@/store/toggleStore";
 import { useUserStore } from "@/store/userStore";
 import { storeToRefs } from "pinia";
+
+// Componentes
 import BackgroundImage from "@/components/BackgroundImage.vue";
 import MenuPages from "@/components/MenuPages.vue";
 import SidebarLateral from "@/components/SidebarLateral.vue";
 import ToggleSwitchMc from "@/components/ToggleSwitchMc.vue";
-import ObtenerUsers from "@/components/ObtenerUsers.vue";
 
-/**
- * Obtenemos el estado global de Pinia para manejar el tipo de vista (Mora/Café) y el nombre del usuario.
- */
+// Stores de Pinia
 const toggleStore = useToggleStore();
-const { nombre, tipoSeleccionado } = storeToRefs(toggleStore);
-
 const userStore = useUserStore();
-const { userName } = storeToRefs(userStore)
 
-/**
- * Variable reactiva para mostrar información dinámica según la selección del usuario.
- */
- const informacion = ref("Seleccione una opción");
+const { tipoSeleccionado } = storeToRefs(toggleStore);
+const { userName } = storeToRefs(userStore);
 
- onMounted(() => {
-  userStore.loadUserFromStorage(); // Usa la acción del store
+// Mensaje dinámico en pantalla
+const informacion = ref("Seleccione una opción");
+
+// Cargar usuario al montar el componente
+onMounted(() => {
+  userStore.loadUserFromStorage();
 });
 
-
-/**
- * Maneja la selección en el menú de navegación.
- * @param {string} opcion - Opción seleccionada en el menú.
- */
- const accionMenu = (opcion) => {
+// Maneja la selección en el menú
+const accionMenu = (opcion) => {
   informacion.value = `Seleccionaste: ${opcion}`;
 };
 
-/**
- * Cambia entre Mora y Café al activar el interruptor (toggle).
- * También actualiza el mensaje mostrado en pantalla.
- */
- const cambiarTipo = () => {
-  toggleStore.toggle(); // Alterna entre Mora y Café
+// Cambia entre "Mora" y "Café"
+const cambiarTipo = async () => {
+  toggleStore.toggle();
+  await nextTick(); // Espera la actualización del estado
   informacion.value = `Vista de ${tipoSeleccionado.value}`;
 };
 
-/**
- * Maneja los clics en los iconos de la barra lateral y actualiza el mensaje mostrado.
- * @param {string} info - Información del icono seleccionado.
- */
- const mostrarInformacion = (info) => {
+// Muestra información al hacer clic en la barra lateral
+const mostrarInformacion = (info) => {
   informacion.value = info;
 };
 </script>

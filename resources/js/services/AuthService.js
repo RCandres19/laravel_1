@@ -1,100 +1,54 @@
 import axios from "axios";
-import router from "@/router"; // Importa el router
-
-const API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000/api"; // Se obtiene la URL desde .env
+import { useAuthStore } from "@/store/authStore"; // Importamos la tienda de autenticación
 
 const AuthService = {
-  // Configuración de Axios
-  api: axios.create({
-    baseURL: API_URL,
-    headers: { "Content-Type": "application/json" },
-  }),
-
-  // Función para iniciar sesión
-  async login() {
+  async login(credentials) {
     try {
-      const response = await AuthService.api.post("/login");
-      const { access_token } = response.data;
-      localStorage.setItem("token", access_token);
-      return access_token;
+      const response = await axios.post("/api/login", credentials);
+      const { access_token, refresh_token } = response.data;
+
+      // Guardamos los tokens en la tienda de autenticación
+      const authStore = useAuthStore();
+      authStore.setTokens(access_token, refresh_token);
+
+      return response.data;
     } catch (error) {
-      console.error("❌ Error en login:", error.response?.data || error.message);
+      console.error("Error en el login:", error);
       throw error;
     }
   },
 
-  // Función para cerrar sesión
-  async logout() {
+  async refreshToken() {
     try {
-      await AuthService.api.post("/logout");
+      const authStore = useAuthStore();
+      const response = await axios.post("/api/refresh-token", {
+        refresh_token: authStore.refreshToken,
+      });
+
+      const { access_token } = response.data;
+      authStore.setTokens(access_token, authStore.refreshToken);
+
+      return access_token;
     } catch (error) {
-      console.error("❌ Error en logout:", error.response?.data || error.message);
-    } finally {
-      localStorage.removeItem("token");
-      router.push("/"); // Redirige al HomePages
+      console.error("Error al refrescar el token:", error);
+      authStore.clearTokens();
+      throw error;
     }
   },
 
-  // Función para refrescar el token
-  async refreshToken() {
+  async logout() {
     try {
-      console.log("🔄 Intentando refrescar el token...");
-      const response = await AuthService.api.post("/refreshToken", {}, { withCredentials: true });
-      if (response.data.access_token) {
-        console.log("✅ Token refrescado:", response.data.access_token);
-        localStorage.setItem("token", response.data.access_token);
-        return response.data.access_token;
-      }
+      const authStore = useAuthStore();
+      await axios.post("/api/logout", {
+        refresh_token: authStore.refreshToken,
+      });
+
+      authStore.clearTokens(); // Eliminamos los tokens de la tienda
     } catch (error) {
-      console.error("❌ Error al refrescar el token:", error.response?.data || error.message);
-      await AuthService.logout();
+      console.error("Error en el logout:", error);
       throw error;
     }
   },
 };
-
-// **Interceptores para manejar el token automáticamente**
-AuthService.api.interceptors.request.use(
-  async (config) => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => Promise.reject(error)
-);
-
-// **Interceptores para manejar la expiración del token**
-AuthService.api.interceptors.response.use(
-  (response) => response,
-  async (error) => {
-    const originalRequest = error.config;
-
-    if (error.response?.status === 401) {
-      console.error(" Token inválido o expirado.");
-
-      if (originalRequest.url.includes("/refreshToken")) {
-        console.error(" El intento de refresh falló. Cerrando sesión...");
-        await AuthService.logout(); // Cerrar sesión si el refresh falla
-        return Promise.reject(error);
-      }
-
-      if (!originalRequest._retry) {
-        originalRequest._retry = true;
-        try {
-          const newToken = await AuthService.refreshToken();
-          originalRequest.headers.Authorization = `Bearer ${newToken}`;
-          return AuthService.api(originalRequest);
-        } catch (refreshError) {
-          return Promise.reject(refreshError);
-        }
-      }
-    }
-
-    return Promise.reject(error);
-  }
-);
-
 
 export default AuthService;

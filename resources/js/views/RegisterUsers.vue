@@ -131,7 +131,7 @@ const registerUser = async () => {
         v-model="type_document" 
         class="w-full mt-3 p-2 rounded bg-white bg-opacity-50 focus:ring-2 focus:ring-blue-500"
       >
-        <option value="" disabled selected>Selecciona un tipo de documento</option>
+        <option value="" disabled>Selecciona un tipo de documento</option>
         <option value="PPT">Permiso de Protección Temporal</option>
         <option value="PEP">Permiso Especial de Permanencia</option>
         <option value="CC">Cédula Colombiana</option>
@@ -144,11 +144,13 @@ const registerUser = async () => {
         v-model="name" 
         placeholder="Nombre" 
         class="w-full mt-3 p-2 rounded bg-white bg-opacity-50 focus:ring-2 focus:ring-blue-500" 
+        required
       />
       <input 
         v-model="document" 
         placeholder="Documento" 
         class="w-full mt-3 p-2 rounded bg-white bg-opacity-50 focus:ring-2 focus:ring-blue-500" 
+        required
       />
       <input 
         v-model="email" 
@@ -159,9 +161,10 @@ const registerUser = async () => {
       <!-- Botón de registro -->
       <button 
         @click="registerUser" 
-        class="w-full bg-blue-600 text-white py-2 rounded mt-4 hover:bg-blue-700 transition"
+        :disabled="loading"
+        class="w-full bg-blue-600 text-white py-2 rounded mt-4 hover:bg-blue-700 transition disabled:bg-gray-400"
       >
-        Registrarse
+        {{ loading ? "Registrando..." : "Registrarse" }}
       </button>
 
       <!-- Mensaje de error -->
@@ -179,66 +182,64 @@ const registerUser = async () => {
 </template>
 
 <script setup>
-/**
- * Importaciones necesarias
- */
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
+import { useAuthStore } from '@/stores/authStore'; // Usa Pinia para manejar autenticación
 import axios from 'axios';
 import Swal from 'sweetalert2';
 
-// Importa la imagen de fondo
+// Imagen de fondo
 import backgroundImage from '@/assets/img/cultivasena.png';
 
-/**
- * Instancia del enrutador de Vue
- */
 const router = useRouter();
+const authStore = useAuthStore(); // Instancia de Pinia para manejar estado
 
-/**
- * Variables reactivas para los datos del usuario
- */
-const name = ref(''); // Nombre del usuario
-const type_document = ref(''); // Tipo de documento
-const document = ref(''); // Número de documento
-const email = ref(''); // Correo electrónico (opcional)
-const errorMessage = ref(''); // Mensaje de error en caso de fallos
+// Variables reactivas
+const name = ref('');
+const type_document = ref('');
+const document = ref('');
+const email = ref('');
+const errorMessage = ref('');
+const loading = ref(false);
 
-/**
- * Función para registrar un usuario en la API
- */
+// Función para registrar un usuario
 const registerUser = async () => {
+  if (!name.value || !type_document.value || !document.value) {
+    errorMessage.value = 'Por favor completa todos los campos obligatorios.';
+    return;
+  }
+
+  loading.value = true;
+  errorMessage.value = '';
+
   try {
-    // Enviar datos al backend
     const response = await axios.post('http://127.0.0.1:8000/api/register', {
-      name: name.value,
+      name: name.value.trim(),
       type_document: type_document.value,
-      document: document.value,
-      email: email.value
+      document: document.value.trim(),
+      email: email.value.trim(),
     });
 
-    // Verifica si el backend devuelve un token de acceso
     if (response.data.access_token) {
-      // Guarda el token en localStorage para futuras autenticaciones
-      localStorage.setItem('token', response.data.access_token);
+      // Guardar token en Pinia en lugar de localStorage
+      authStore.setToken(response.data.access_token);
 
-      // Muestra una alerta de éxito con SweetAlert2
       Swal.fire({
         title: 'Registro Exitoso',
         text: `Bienvenido, ${name.value}!`,
         icon: 'success',
-        confirmButtonColor: '#1d4ed8'
+        confirmButtonColor: '#1d4ed8',
       });
 
-      // Redirigir al usuario a la página de bienvenida
-      router.push(`/welcome/${name.value}`);
+      router.push('/welcome'); // Redirigir a la página de bienvenida
     } else {
       throw new Error('No se recibió un token en la respuesta.');
     }
   } catch (error) {
-    // Captura cualquier error y lo muestra al usuario
-    errorMessage.value = 'Error en el registro. Verifica los datos e inténtalo nuevamente.';
-    console.error('Error en el registro:', error);
+    errorMessage.value = error.response?.data?.message || 'Error en el registro. Intenta de nuevo.';
+    console.error('❌ Error en el registro:', error.response?.data || error.message);
+  } finally {
+    loading.value = false;
   }
 };
 </script>

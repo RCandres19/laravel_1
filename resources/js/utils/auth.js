@@ -1,5 +1,6 @@
+import { useAuthStore } from "@/stores/AuthStore";
+
 export const isAuthenticated = () => {
-    const token = localStorage.getItem("token");
-    return !!token; // Devuelve true si hay un token válido
-  };
-  
+  const authStore = useAuthStore();
+  return !!authStore.token; // Verifica si hay un token en Pinia
+};

@@ -14,8 +14,6 @@ import { computed } from "vue";
 
 /**
  * 📌 Definir las propiedades del componente
- *    - `tipo`: Indica el tipo de cultivo ("Mora" o "Café").
- *     Usamos `defineProps` directamente, sin importarlo
  */
 const props = defineProps({
   tipo: {
@@ -28,9 +26,11 @@ const props = defineProps({
 /**
  * 📌 Computed property para obtener la imagen de fondo según el tipo de cultivo.
  */
-const imagenFondo = computed(() =>
-  props.tipo === "Mora"
-    ? new URL("@/assets/img/caja.jpg", import.meta.url).href
-    : new URL("@/assets/img/formas.jpg", import.meta.url).href
-);
+const imagenFondo = computed(() => {
+  const images = {
+    Mora: "/src/assets/img/caja.jpg",
+    Café: "/src/assets/img/formas.jpg",
+  };
+  return images[props.tipo] || images["Mora"]; // Valor por defecto
+});
 </script>
