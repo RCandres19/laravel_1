@@ -38,7 +38,7 @@ return [
 
     'guards' => [
         'api' => [
-            'driver' => 'jwt', // Usa JWT en lugar de sesiones
+            'driver' => 'jwt', // Usa JWT en lugar de sesiones o Sanctum
             'provider' => 'users', // Utiliza la fuente de datos 'users'
         ],
     ],

@@ -157,6 +157,22 @@ const registerUser = async () => {
         placeholder="Correo (opcional)" 
         class="w-full mt-3 p-2 rounded bg-white bg-opacity-50 focus:ring-2 focus:ring-blue-500" 
       />
+      <!-- Contraseña -->
+      <input 
+        type="password"
+        v-model="password"
+        placeholder="Contraseña" 
+        class="w-full mt-3 p-2 rounded bg-white bg-opacity-50 focus:ring-2 focus:ring-blue-500" 
+        required
+      />
+      <!-- Confirmar contraseña -->
+      <input 
+        type="password"
+        v-model="confirmPassword"
+        placeholder="Confirmar Contraseña" 
+        class="w-full mt-3 p-2 rounded bg-white bg-opacity-50 focus:ring-2 focus:ring-blue-500" 
+        required
+      />
 
       <!-- Botón de registro -->
       <button 
@@ -199,13 +215,20 @@ const name = ref('');
 const type_document = ref('');
 const document = ref('');
 const email = ref('');
+const password = ref('');
+const confirmPassword = ref('');
 const errorMessage = ref('');
 const loading = ref(false);
 
 // Función para registrar un usuario
 const registerUser = async () => {
-  if (!name.value || !type_document.value || !document.value) {
+  if (!name.value || !type_document.value || !document.value || !password.value || !confirmPassword.value) {
     errorMessage.value = 'Por favor completa todos los campos obligatorios.';
+    return;
+  }
+
+  if (password.value !== confirmPassword.value) {
+    errorMessage.value = 'Las contraseñas no coinciden.';
     return;
   }
 
@@ -218,6 +241,7 @@ const registerUser = async () => {
       type_document: type_document.value,
       document: document.value.trim(),
       email: email.value.trim(),
+      password: password.value.trim(),  // Agregamos la contraseña
     });
 
     if (response.data.access_token) {
@@ -226,7 +250,7 @@ const registerUser = async () => {
 
       Swal.fire({
         title: 'Registro Exitoso',
-        text: `Bienvenido, ${name.value}!`,
+        text: `Bienvenido, ${name.value}! Revisa tu correo para confirmar tu cuenta.`,
         icon: 'success',
         confirmButtonColor: '#1d4ed8',
       });
@@ -243,150 +267,3 @@ const registerUser = async () => {
   }
 };
 </script>
-
-
-
-
-<!--<script setup>
-import { ref } from 'vue';
-import { useRouter } from 'vue-router';
-import axios from 'axios';
-
-const router = useRouter();
-const name = ref('');
-const type_document = ref('');
-const document = ref('');
-const email = ref('');
-const errorMessage = ref('');
-
-const register = async () => {
-  try {
-    await axios.post('http://127.0.0.1:8000/api/register', {
-      name: name.value,
-      type_document: type_document.value,
-      document: document.value,
-      email: email.value
-    });
-
-    alert('Registro exitoso');
-    router.push('/login');
-  } 
-      catch (error) {
-      console.error(error.response?.data); // Muestra el error exacto en consola
-      errorMessage.value = error.response?.data?.message || 'Error al registrar usuario';
-    }
-
-};
-</script>
-
-<template>
-  <div class="container">
-    <div class="form-box">
-      <h2>Registro</h2>
-      <input v-model="name" placeholder="Name" />
-      <select v-model="type_document">
-        <option value="PPT">PPT</option>
-        <option value="PEP">PEP</option>
-        <option value="CC">CC</option>
-        <option value="TI">TI</option>
-        <option value="Pasaporte">Pasaporte</option>
-      </select>
-
-      <input v-model="document" placeholder="Document" />
-      <input v-model="email" placeholder="Email (opcional)" />
-      <button @click="register">Registrar</button>
-      <p class="error">{{ errorMessage }}</p>
-    </div>
-  </div>
-</template>
-
-<style scoped>
-/* Reutilizamos estilos de Login.vue */
-.container {
-  background-image: url('@/assets/img/cultivasena.png');
-  background-size: cover;
-  background-position: center;
-  height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.form-box {
-  background: rgba(255, 255, 255, 0.3);
-  backdrop-filter: blur(5px);
-  padding: 20px;
-  border-radius: 10px;
-  text-align: center;
-}
-
-.error {
-  color: red;
-}
-</style> -->
-
-<!--<template>
-  <div class="register-container">
-    <form @submit.prevent="registerUser">
-      <h2>Registro</h2>
-      <input v-model="user.name" type="text" placeholder="Nombre" required />
-      <select v-model="user.type_document" required>
-        <option value="" disabled>Seleccione Tipo de Documento</option>
-        <option value="DNI">DNI</option>
-        <option value="Pasaporte">Pasaporte</option>
-      </select>
-      <input v-model="user.document" type="text" placeholder="Documento" required />
-      <input v-model="user.email" type="email" placeholder="Correo (Opcional)" />
-      <button type="submit">Registrarse</button>
-    </form>
-  </div>
-</template>
-
-<script>
-export default {
-  data() {
-    return {
-      user: {
-        name: '',
-        type_document: '',
-        document: '',
-        email: ''
-      }
-    };
-  },
-  methods: {
-    async registerUser() {
-      try {
-        await this.$axios.post('/register', this.user);
-        alert('Usuario registrado correctamente');
-        this.$router.push('/welcome'); // Redirigir a la página de bienvenida
-      } catch (error) {
-        alert('Error en el registro: ' + error.response.data.message);
-      }
-    }
-  }
-};
-</script>
-
-<style scoped>
-.register-container {
-  max-width: 400px;
-  margin: auto;
-  padding: 20px;
-  background: rgba(255, 255, 255, 0.8);
-  border-radius: 10px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
-input, select, button {
-  width: 100%;
-  margin-bottom: 10px;
-  padding: 10px;
-}
-button {
-  background: blue;
-  color: white;
-  border: none;
-  cursor: pointer;
-}
-</style> -->
-

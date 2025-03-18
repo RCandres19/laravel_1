@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
-use Illuminate\Http\Request; 
+use Illuminate\Http\Request;
 
 /**
  * Grupo de rutas protegidas con middleware JWT.
@@ -17,8 +17,6 @@ Route::middleware(['jwt.auth'])->group(function () {
      * Controlador: AuthController@me
      */
     Route::get('/me', [AuthController::class, 'me']);
-
-    
 
     // Rutas protegidas para la gestión de usuarios
     Route::get('/users', [UserController::class, 'index']); // Obtener todos los usuarios

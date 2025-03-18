@@ -22,6 +22,8 @@ return new class extends Migration {
      *  `type_document`: Tipo de documento de identidad (CC, TI, Pasaporte, etc.).
      *  `document`: Número de documento (único para cada usuario).
      *  `email`: Correo electrónico (opcional).
+     *  `password`: Contraseña (para autenticación).
+     *  `email_verified_at`: Fecha y hora de verificación del correo.
      *  `timestamps`: Registra automáticamente `created_at` y `updated_at`.
      */
     public function up() {
@@ -31,6 +33,8 @@ return new class extends Migration {
             $table->string('type_document'); // Tipo de documento
             $table->string('document')->unique(); // Documento único
             $table->string('email')->nullable(); // Email opcional
+            $table->string('password'); // Contraseña del usuario
+            $table->timestamp('email_verified_at')->nullable(); // Fecha y hora de verificación de correo electrónico
             $table->timestamps(); // `created_at` y `updated_at`
         });
     }

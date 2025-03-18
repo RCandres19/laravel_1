@@ -6,12 +6,16 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Auth\Passwords\CanResetPassword; // 📌 Agregar esto
 use Tymon\JWTAuth\Contracts\JWTSubject;
+use App\Notifications\VerifyEmailNotification;
 
-class User extends Authenticatable implements JWTSubject
+
+class User extends Authenticatable implements JWTSubject, VerifyEmailNotification //  Implementar MustVerifyEmail
 {
-    use HasFactory, CanResetPassword; // 📌 Agregar el trait
+    use HasFactory, CanResetPassword; //  Agregar el trait
 
-    protected $fillable = ['name', 'type_document', 'document', 'email'];
+    protected $fillable = ['name', 'type_document', 'document', 'email', 'password', 'role']; //  Agregar role y password
+
+    protected $hidden = ['password', 'remember_token']; //  Ocultar contraseña y remember_token
 
     // Métodos requeridos por JWTSubject
     public function getJWTIdentifier()
@@ -22,5 +26,18 @@ class User extends Authenticatable implements JWTSubject
     public function getJWTCustomClaims()
     {
         return [];
+    }
+
+    // Método para verificar si el usuario es administrador
+    public function isAdmin()
+    {
+        return $this->role === 'admin';
+    }
+
+    // Métodos relacionados con la verificación de correo electrónico
+    public function sendEmailVerificationNotification()
+    {
+        // Método que puedes personalizar para enviar un correo de verificación
+        $this->notify(new \App\Notifications\VerifyEmailNotification());
     }
 }
