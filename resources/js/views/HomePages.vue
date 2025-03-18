@@ -1,6 +1,6 @@
 <script setup>
 import { useRouter } from 'vue-router';
-import cultivaSena from "@/assets/img/cultivasena.png"; // Imagen de fondo
+import cultivaSena from "../assets/img/cultivasena.png"; // Imagen de fondo
 
 const router = useRouter();
 

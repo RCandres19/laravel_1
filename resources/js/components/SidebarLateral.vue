@@ -30,7 +30,7 @@
 </template>
 
 <script setup>
-import { ref, defineProps, defineEmits } from "vue";
+import { ref } from "vue";
 
 /**
  * Propiedad para recibir el estado inicial desde el padre.

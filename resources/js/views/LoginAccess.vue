@@ -61,8 +61,8 @@
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 import Swal from "sweetalert2";
-import { useAuthStore } from "@/stores/AuthStore"; // Importando Pinia Store
-import backgroundImage from "@/assets/img/cultivasena.png";
+import { useAuthStore } from "../store/AuthStore"; // Importando Pinia Store
+import backgroundImage from "../assets/img/cultivasena.png";
 
 const router = useRouter();
 const authStore = useAuthStore(); // Instancia de Pinia

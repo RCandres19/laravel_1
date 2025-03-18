@@ -40,8 +40,8 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import MenuPages from '@/components/MenuPages.vue';
-import AuthService from '@/services/AuthService';
+import MenuPages from '../components/MenuPages.vue';
+import AuthService from '../services/AuthService';
 
 // Estado reactivo
 const user = ref({});

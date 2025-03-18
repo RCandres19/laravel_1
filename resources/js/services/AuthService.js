@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useAuthStore } from "@/store/authStore"; // Importamos la tienda de autenticación
+import { useAuthStore } from "../store/AuthStore"; // Importamos la tienda de autenticación
 
 const AuthService = {
   async login(credentials) {

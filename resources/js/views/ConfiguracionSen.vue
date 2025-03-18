@@ -39,7 +39,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import MenuPages from '@/components/MenuPages.vue';
+import MenuPages from '../components/MenuPages.vue';
 
 // Variables reactivas para almacenar la configuración
 const notificaciones = ref(true); // Estado de las notificaciones (activadas por defecto)

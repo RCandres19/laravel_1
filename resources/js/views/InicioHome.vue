@@ -30,7 +30,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import MenuPages from '@/components/MenuPages.vue';
+import MenuPages from '../components/MenuPages.vue';
 
 // Instancia del router para manejar navegación
 const router = useRouter();

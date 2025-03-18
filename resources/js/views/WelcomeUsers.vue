@@ -28,8 +28,8 @@
 
 <script setup>
 import { ref, onMounted, nextTick } from "vue";
-import { useToggleStore } from "@/store/toggleStore";
-import { useUserStore } from "@/store/userStore";
+import { useToggleStore } from "../store/toggleStore";
+import { useUserStore } from "../store/userStore";
 import { storeToRefs } from "pinia";
 
 // Componentes
