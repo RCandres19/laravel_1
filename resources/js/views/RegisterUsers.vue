@@ -10,62 +10,84 @@
     <div class="relative bg-white bg-opacity-20 backdrop-blur-md p-6 rounded-lg shadow-lg w-80 text-center">
       <h2 class="text-2xl font-bold text-gray-800">Registro de Usuario</h2>
 
-      <!-- Selección del tipo de documento -->
-      <select 
-        v-model="type_document" 
-        class="w-full mt-3 p-2 rounded bg-white bg-opacity-50 focus:ring-2 focus:ring-blue-500"
-      >
-        <option value="" disabled>Selecciona un tipo de documento</option>
-        <option value="PPT">Permiso de Protección Temporal</option>
-        <option value="PEP">Permiso Especial de Permanencia</option>
-        <option value="CC">Cédula Colombiana</option>
-        <option value="TI">Tarjeta de Identidad</option>
-        <option value="PP">Pasaporte</option>
-      </select>
+      <!-- Formulario -->
+      <form @submit.prevent="registerUser">
+        <!-- Selección del tipo de documento -->
+        <select 
+          v-model="type_document"
+          id="type_document"
+          name="type_document" 
+          class="w-full mt-3 p-2 rounded bg-white bg-opacity-50 focus:ring-2 focus:ring-blue-500"
+          required
+        >
+          <option value="" disabled>Selecciona un tipo de documento</option>
+          <option value="CC">Cédula Colombiana</option>
+          <option value="CE">Cédula Extranjería</option>
+          <option value="PPT">Permiso de Protección Temporal</option>
+          <option value="PEP">Permiso Especial de Permanencia</option>
+          <option value="PP">Pasaporte</option>
+          <option value="TI">Tarjeta de Identidad</option>
+        </select>
 
-      <!-- Campos de entrada para el usuario -->
-      <input 
-        v-model="name" 
-        placeholder="Nombre" 
-        class="w-full mt-3 p-2 rounded bg-white bg-opacity-50 focus:ring-2 focus:ring-blue-500" 
-        required
-      />
-      <input 
-        v-model="document" 
-        placeholder="Documento" 
-        class="w-full mt-3 p-2 rounded bg-white bg-opacity-50 focus:ring-2 focus:ring-blue-500" 
-        required
-      />
-      <input 
-        v-model="email" 
-        placeholder="Correo (opcional)" 
-        class="w-full mt-3 p-2 rounded bg-white bg-opacity-50 focus:ring-2 focus:ring-blue-500" 
-      />
-      <!-- Contraseña -->
-      <input 
-        type="password"
-        v-model="password"
-        placeholder="Contraseña" 
-        class="w-full mt-3 p-2 rounded bg-white bg-opacity-50 focus:ring-2 focus:ring-blue-500" 
-        required
-      />
-      <!-- Confirmar contraseña -->
-      <input 
-        type="password"
-        v-model="confirmPassword"
-        placeholder="Confirmar Contraseña" 
-        class="w-full mt-3 p-2 rounded bg-white bg-opacity-50 focus:ring-2 focus:ring-blue-500" 
-        required
-      />
+        <!-- Campos de entrada para el usuario -->
+        <input 
+          v-model="name"
+          id="name"
+          name="name" 
+          placeholder="Nombre" 
+          class="w-full mt-3 p-2 rounded bg-white bg-opacity-50 focus:ring-2 focus:ring-blue-500" 
+          required
+        />
+        <input 
+          v-model="document" 
+          id="document"
+          name="document"
+          placeholder="Documento" 
+          class="w-full mt-3 p-2 rounded bg-white bg-opacity-50 focus:ring-2 focus:ring-blue-500" 
+          required
+        />
+        <input 
+          v-model="email" 
+          id="email"
+          name="email"
+          placeholder="Correo (opcional)" 
+          autocomplete="username"
+          class="w-full mt-3 p-2 rounded bg-white bg-opacity-50 focus:ring-2 focus:ring-blue-500" 
+        />
+        
+        <!-- Contraseña -->
+        <input 
+          type="password"
+          v-model="password"
+          id="password"
+          name="password"
+          placeholder="Contraseña"
+          autocomplete="new-password" 
+          class="w-full mt-3 p-2 rounded bg-white bg-opacity-50 focus:ring-2 focus:ring-blue-500" 
+          required
+        />
+        
+        <!-- Confirmar contraseña -->
+        <input 
+          type="password"
+          v-model="confirmPassword"
+          id="confirmPassword"
+          name="confirmPassword"
+          placeholder="Confirmar Contraseña"
+          autocomplete="new-password" 
+          class="w-full mt-3 p-2 rounded bg-white bg-opacity-50 focus:ring-2 focus:ring-blue-500" 
+          required
+        />
 
-      <!-- Botón de registro -->
-      <button 
-        @click="registerUser" 
-        :disabled="loading"
-        class="w-full bg-blue-600 text-white py-2 rounded mt-4 hover:bg-blue-700 transition disabled:bg-gray-400"
-      >
-        {{ loading ? "Registrando..." : "Registrarse" }}
-      </button>
+        <!-- Botón de registro -->
+        <button 
+          type="submit" 
+          :disabled="loading"
+          class="w-full bg-blue-600 text-white py-2 rounded mt-4 hover:bg-blue-700 transition disabled:bg-gray-400"
+        >
+          {{ loading ? "Registrando..." : "Registrarse" }}
+        </button>
+      </form>
 
       <!-- Mensaje de error -->
       <p v-if="errorMessage" class="text-red-500 mt-2">{{ errorMessage }}</p>
@@ -80,6 +102,7 @@
     </div>
   </div>
 </template>
+
 
 <script setup>
 import { ref } from 'vue';
@@ -106,7 +129,8 @@ const loading = ref(false);
 
 // Función para registrar un usuario
 const registerUser = async () => {
-  if (!name.value || !type_document.value || !document.value || !password.value || !confirmPassword.value) {
+  // Validaciones previas
+  if (!name.value || !type_document.value || !document.value || !email.value || !password.value || !confirmPassword.value) {
     errorMessage.value = 'Por favor completa todos los campos obligatorios.';
     return;
   }
@@ -122,15 +146,16 @@ const registerUser = async () => {
   try {
     const response = await axios.post('http://127.0.0.1:8000/api/register', {
       name: name.value.trim(),
-      type_document: type_document.value,
+      type_document: type_document.value.trim(),
       document: document.value.trim(),
       email: email.value.trim(),
-      password: password.value.trim(),  // Agregamos la contraseña
+      password: password.value.trim(),
+      password_confirmation: confirmPassword.value.trim(),
     });
 
+    // Si se recibe el token correctamente
     if (response.data.access_token) {
-      // Guardar token en Pinia en lugar de localStorage
-      authStore.setToken(response.data.access_token);
+      authStore.setTokens(response.data.access_token);
 
       Swal.fire({
         title: 'Registro Exitoso',
@@ -144,8 +169,24 @@ const registerUser = async () => {
       throw new Error('No se recibió un token en la respuesta.');
     }
   } catch (error) {
-    errorMessage.value = error.response?.data?.message || 'Error en el registro. Intenta de nuevo.';
-    console.error('❌ Error en el registro:', error.response?.data || error.message);
+    console.error('Error en el registro:', error.response?.data || error.message);
+
+    if (error.response && error.response.data.errors) {
+      const errors = error.response.data.errors;
+      errorMessage.value = '';
+
+      if (errors.document) {
+        errorMessage.value += `Documento: ${errors.document[0]} `;
+      }
+      if (errors.email) {
+        errorMessage.value += `Correo: ${errors.email[0]} `;
+      }
+      if (errors.password) {
+        errorMessage.value += `Contraseña: ${errors.password[0]} `;
+      }
+    } else {
+      errorMessage.value = 'Error en el registro. Intenta de nuevo.';
+    }
   } finally {
     loading.value = false;
   }

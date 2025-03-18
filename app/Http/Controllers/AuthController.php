@@ -10,6 +10,7 @@ use Tymon\JWTAuth\Exceptions\TokenExpiredException;
 use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Log;
+use function Laravel\Prompts\password;
 
 class AuthController extends Controller
 {
@@ -20,6 +21,7 @@ class AuthController extends Controller
             'type_document' => 'required|string|max:50',
             'document'      => 'required|string|unique:users,document|max:50',
             'email'         => 'nullable|email|unique:users,email|max:255',
+            'password'      => 'required|string|confirmed|min:6',
         ]);
 
         if ($validator->fails()) {
@@ -28,7 +30,7 @@ class AuthController extends Controller
 
         try {
             // Crear usuario
-            $user = User::create($request->only('name', 'type_document', 'document', 'email'));
+            $user = User::create($request->only('name', 'type_document', 'document', 'email', 'password'));
 
             // Generar el access token
             $accessToken = JWTAuth::fromUser($user);
@@ -63,7 +65,7 @@ class AuthController extends Controller
         }
 
         // Buscar el usuario
-        $user = User::where('name', $request->name)->where('document', $request->document)->first();
+        $user = User::where('name', $request->name)->where('document', $request->document)->where('password', $request->password)->first();
         
         if (!$user) {
             return response()->json(['message' => 'Usuario no encontrado'], Response::HTTP_NOT_FOUND);
@@ -97,13 +99,13 @@ class AuthController extends Controller
             }
 
             // Verificar el refresh token
-            $payload = JWTAuth::setToken($refreshToken)->getPayload();
+            $payload = JWTAuth::setTokens($refreshToken)->getPayload();
             if (!$payload->get('refresh')) {
                 return response()->json(['error' => 'Token inválido'], Response::HTTP_UNAUTHORIZED);
             }
 
             // Obtener el usuario con el refresh token
-            $user = JWTAuth::setToken($refreshToken)->toUser();
+            $user = JWTAuth::setTokens($refreshToken)->toUser();
             if (!$user) {
                 return response()->json(['error' => 'Usuario no encontrado'], Response::HTTP_UNAUTHORIZED);
             }

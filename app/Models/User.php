@@ -6,10 +6,11 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Auth\Passwords\CanResetPassword; // 📌 Agregar esto
 use Tymon\JWTAuth\Contracts\JWTSubject;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Notifications\VerifyEmailNotification;
 
 
-class User extends Authenticatable implements JWTSubject, VerifyEmailNotification //  Implementar MustVerifyEmail
+class User extends Authenticatable implements JWTSubject, MustVerifyEmail //  Implementar MustVerifyEmail
 {
     use HasFactory, CanResetPassword; //  Agregar el trait
 
@@ -38,6 +39,6 @@ class User extends Authenticatable implements JWTSubject, VerifyEmailNotificatio
     public function sendEmailVerificationNotification()
     {
         // Método que puedes personalizar para enviar un correo de verificación
-        $this->notify(new \App\Notifications\VerifyEmailNotification());
+        $this->notify(new VerifyEmailNotification());
     }
 }

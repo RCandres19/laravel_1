@@ -13,14 +13,19 @@
       <form @submit.prevent="login">
         <!-- Campos de entrada -->
         <input 
-          v-model.trim="name" 
+          v-model.trim="name"
+          id="name"
+          name="name" 
           placeholder="Nombre" 
           class="w-full mt-3 p-2 rounded bg-white bg-opacity-50 focus:ring-2 focus:ring-green-500" 
           required
         />
         <input 
-          v-model.trim="document" 
-          placeholder="Documento" 
+          v-model.trim="document"
+          id="document"
+          name="document" 
+          placeholder="Documento"
+          autocomplete="username" 
           class="w-full mt-3 p-2 rounded bg-white bg-opacity-50 focus:ring-2 focus:ring-green-500" 
           required
         />
@@ -28,7 +33,10 @@
         <input 
           type="password"
           v-model.trim="password"
+          id="password"
+          name="password"
           placeholder="Contraseña"
+          autocomplete="new-password"
           class="w-full mt-3 p-2 rounded bg-white bg-opacity-50 focus:ring-2 focus:ring-green-500"
           required
         />
@@ -61,11 +69,11 @@
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 import Swal from "sweetalert2";
-import { useAuthStore } from "../store/AuthStore"; // Importando Pinia Store
+import { useAuthStore } from "../store/AuthStore.js"; // Importando Pinia Store
 import backgroundImage from "../assets/img/cultivasena.png";
 
 const router = useRouter();
-const authStore = useAuthStore(); // Instancia de Pinia
+const AuthStore = useAuthStore(); // Instancia de Pinia
 
 // Variables reactivas
 const name = ref("");
@@ -85,7 +93,7 @@ const login = async () => {
 
   try {
     // Llamada al login con nombre, documento y contraseña
-    await authStore.login({
+    await AuthStore.login({
       name: name.value.trim(),
       document: document.value.trim(),
       password: password.value.trim(),
@@ -102,6 +110,7 @@ const login = async () => {
     // Redirigir a la página de bienvenida
     router.push("/welcome");
   } catch (error) {
+    console.log("Auth Store:", AuthStore); //Verifica si el AuthStore se esta utilizando
     // Manejo de error si las credenciales son incorrectas o si el correo no está verificado
     errorMessage.value = error.response?.data?.message || "Credenciales incorrectas o cuenta no verificada.";
     console.error("❌ Error en el login:", error.response?.data || error.message);

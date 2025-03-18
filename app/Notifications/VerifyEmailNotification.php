@@ -36,7 +36,7 @@ class VerifyEmailNotification extends Notification
         return (new MailMessage)
                     ->subject('Verificación de correo electrónico')
                     ->line('Por favor, haz clic en el enlace siguiente para verificar tu dirección de correo electrónico.')
-                    ->action('Verificar correo', url(route('verification.notice')))
+                    ->action('Verificar Correo', url(route('verification.verify', ['id' => $user->getKey(), 'hash' => sha1($user->getEmailForVerification())])))
                     ->line('Gracias por usar nuestra aplicación.');
     }
 }
