@@ -69,11 +69,11 @@
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 import Swal from "sweetalert2";
-import { useAuthStore } from "../store/AuthStore.js"; // Importando Pinia Store
+import { useAuthStore } from "../store/AuthStore"; // Importando Pinia Store
 import backgroundImage from "../assets/img/cultivasena.png";
 
 const router = useRouter();
-const AuthStore = useAuthStore(); // Instancia de Pinia
+const authStore = useAuthStore(); // Instancia de Pinia
 
 // Variables reactivas
 const name = ref("");
@@ -93,7 +93,7 @@ const login = async () => {
 
   try {
     // Llamada al login con nombre, documento y contraseña
-    await AuthStore.login({
+    await authStore.login({
       name: name.value.trim(),
       document: document.value.trim(),
       password: password.value.trim(),
@@ -110,10 +110,10 @@ const login = async () => {
     // Redirigir a la página de bienvenida
     router.push("/welcome");
   } catch (error) {
-    console.log("Auth Store:", AuthStore); //Verifica si el AuthStore se esta utilizando
+    console.log("Auth Store:", authStore); //Verifica si el AuthStore se esta utilizando
     // Manejo de error si las credenciales son incorrectas o si el correo no está verificado
     errorMessage.value = error.response?.data?.message || "Credenciales incorrectas o cuenta no verificada.";
-    console.error("❌ Error en el login:", error.response?.data || error.message);
+    console.error("Error en el login:", error.response?.data || error.message);
   } finally {
     loading.value = false;
   }

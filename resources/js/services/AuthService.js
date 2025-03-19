@@ -1,54 +1,56 @@
 import axios from "axios";
-import { useAuthStore } from "../store/AuthStore"; // Importamos la tienda de autenticación
+import { useAuthStore } from "../store/AuthStore";
+
+const api = axios.create({
+  baseURL: import.meta.env.VITE_API_URL || "http://127.0.0.1:8000/api", //  Usa la variable de entorno
+  headers: {
+    "Content-Type": "application/json",
+    Accept: "application/json",
+  },
+  withCredentials: true,
+});
 
 const AuthService = {
   async login(credentials) {
     try {
-      const response = await axios.post("/api/login", credentials);
-      const { access_token, refresh_token } = response.data;
-
-      // Guardamos los tokens en la tienda de autenticación
-      const authStore = useAuthStore();
-      authStore.setTokens(access_token, refresh_token);
-
+      const response = await api.post("/login", credentials);
       return response.data;
     } catch (error) {
-      console.error("Error en el login:", error);
+      console.error(" Error en el login:", error.response?.data || error.message);
       throw error;
     }
   },
 
-  async refreshToken() {
+  async refreshToken(refreshToken) {
     try {
-      const authStore = useAuthStore();
-      const response = await axios.post("/api/refresh-token", {
-        refresh_token: authStore.refreshToken,
-      });
-
-      const { access_token } = response.data;
-      authStore.setTokens(access_token, authStore.refreshToken);
-
-      return access_token;
+      const response = await api.post("/refreshToken", { refresh_token: refreshToken });
+      return response.data.access_token;
     } catch (error) {
-      console.error("Error al refrescar el token:", error);
-      authStore.clearTokens();
+      console.error(" Error al refrescar el token:", error);
       throw error;
     }
   },
 
   async logout() {
     try {
-      const authStore = useAuthStore();
-      await axios.post("/api/logout", {
-        refresh_token: authStore.refreshToken,
-      });
-
-      authStore.clearTokens(); // Eliminamos los tokens de la tienda
+      await api.post("/logout", {}, { withCredentials: true }); //  Enviamos solo la cookie
     } catch (error) {
       console.error("Error en el logout:", error);
       throw error;
     }
-  },
+  }
+  
 };
+
+api.interceptors.request.use(
+  (config) => {
+    const authStore = useAuthStore();
+    if (authStore.accessToken) {
+      config.headers.Authorization = `Bearer ${authStore.accessToken}`;
+
+    } return config;
+  },
+  (error) => Promise.reject(error)
+);
 
 export default AuthService;

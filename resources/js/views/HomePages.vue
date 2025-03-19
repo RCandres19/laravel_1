@@ -13,6 +13,11 @@ const goToLogin = () => {
 </script>
 
 <template>
+  <div>
+    <h1>Hola</h1>
+    <p>Este es un correo de prueba desde Laravel</p>
+  </div>
+
   <div 
     class="w-full h-screen bg-cover bg-center relative" 
     :style="{ backgroundImage: `url(${cultivaSena})` }"

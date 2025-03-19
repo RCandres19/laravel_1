@@ -5,37 +5,51 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
 
 /**
- * Grupo de rutas protegidas con middleware JWT.
- * - 'jwt.auth': Requiere un token JWT válido para acceder.
+ *  Rutas protegidas con middleware JWT ('jwt.auth')
+ * - Requieren un token JWT válido para acceder.
  */
 Route::middleware(['jwt.auth'])->group(function () {
-    /**
-     * Obtiene los datos del usuario autenticado.
-     * Método: GET
-     * Ruta: /me
-     * Controlador: AuthController@me
-     */
+    //  Obtener datos del usuario autenticado
     Route::get('/me', [AuthController::class, 'me']);
 
-    // Rutas protegidas para la gestión de usuarios
-    Route::get('/users', [UserController::class, 'index']); // Obtener todos los usuarios
-    Route::post('/users', [UserController::class, 'store']); // Crear usuario
-    Route::get('/users/{id}', [UserController::class, 'show']); // Obtener usuario por ID
-    Route::put('/users/{id}', [UserController::class, 'update']); // Actualizar usuario
-    Route::delete('/users/{id}', [UserController::class, 'destroy']); // Eliminar usuario
+    //  Gestión de usuarios (CRUD)
+    Route::prefix('/users')->group(function () {
+        Route::get('/', [UserController::class, 'index']);   // Obtener todos los usuarios
+        Route::post('/', [UserController::class, 'store']);  // Crear usuario
+        Route::get('/{id}', [UserController::class, 'show']); // Obtener usuario por ID
+        Route::put('/{id}', [UserController::class, 'update']); // Actualizar usuario
+        Route::delete('/{id}', [UserController::class, 'destroy']); // Eliminar usuario
+    });
 });
 
-// Rutas de autenticación (accesibles sin autenticación previa)
+/**
+ *  Rutas de autenticación (accesibles sin autenticación previa)
+ */
 Route::post('/register', [AuthController::class, 'register']); // Registro de usuario
 Route::post('/login', [AuthController::class, 'login']); // Iniciar sesión
 
 /**
- * Refresca el token de autenticación si está expirado.
- * Se eliminó 'auth:api' para evitar errores con JWT.
+ *  Refrescar el token de autenticación
+ * - Se usa una cookie httpOnly para el Refresh Token.
  */
-Route::post('/refreshToken', [AuthController::class, 'refreshToken']);
+Route::post('/refreshToken', [AuthController::class, 'refreshToken'])->middleware('jwt.refresh');
 
 /**
- * Cierra sesión y revoca el token JWT.
+ *  Cerrar sesión y revocar el token JWT.
  */
 Route::post('/logout', [AuthController::class, 'logout']);
+
+/**
+ * bee gees tragedy
+ * run dmc its tricky
+ * empire of the sun we are the people
+ * laura branigan self control
+ * boney m rasputin
+ * tame impala let it happen
+ * earth wind and fire lets groove
+ * la bouche be my lover
+ * modern talking cheri cheri lay
+ * bee gees stayin alive
+ * kim carnes bette davis eyes
+ * fleetwood mac  the chain
+ */
