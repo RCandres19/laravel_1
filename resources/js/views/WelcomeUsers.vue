@@ -32,40 +32,49 @@ import { useToggleStore } from "../store/toggleStore";
 import { useUserStore } from "../store/userStore";
 import { storeToRefs } from "pinia";
 
-// Componentes
+// Importación de componentes
 import BackgroundImage from "@/components/BackgroundImage.vue";
 import MenuPages from "@/components/MenuPages.vue";
 import SidebarLateral from "@/components/SidebarLateral.vue";
 import ToggleSwitchMc from "@/components/ToggleSwitchMc.vue";
 
-// Stores de Pinia
+// Inicialización de las stores de Pinia
 const toggleStore = useToggleStore();
 const userStore = useUserStore();
 
+// Obtención de estados reactivos desde las stores
 const { tipoSeleccionado } = storeToRefs(toggleStore);
 const { userName } = storeToRefs(userStore);
 
-// Mensaje dinámico en pantalla
+// Variable reactiva para mostrar información dinámica en la pantalla
 const informacion = ref("Seleccione una opción");
 
-// Cargar usuario al montar el componente
+// Cargar el usuario almacenado al montar el componente
 onMounted(() => {
   userStore.loadUserFromStorage();
 });
 
-// Maneja la selección en el menú
+/**
+ * Maneja la selección de una opción en el menú y actualiza el mensaje en pantalla.
+ * @param {string} opcion - La opción seleccionada en el menú.
+ */
 const accionMenu = (opcion) => {
   informacion.value = `Seleccionaste: ${opcion}`;
 };
 
-// Cambia entre "Mora" y "Café"
+/**
+ * Alterna entre los tipos "Mora" y "Café", actualizando el estado en Pinia y mostrando el cambio en pantalla.
+ */
 const cambiarTipo = async () => {
-  toggleStore.toggle();
-  await nextTick(); // Espera la actualización del estado
+  toggleStore.toggle(); // Cambia el estado en la store
+  await nextTick(); // Espera a que Vue actualice el DOM
   informacion.value = `Vista de ${tipoSeleccionado.value}`;
 };
 
-// Muestra información al hacer clic en la barra lateral
+/**
+ * Muestra información en pantalla cuando un icono de la barra lateral es presionado.
+ * @param {string} info - Información a mostrar en pantalla.
+ */
 const mostrarInformacion = (info) => {
   informacion.value = info;
 };

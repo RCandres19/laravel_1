@@ -103,7 +103,6 @@
   </div>
 </template>
 
-
 <script setup>
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
@@ -117,7 +116,7 @@ import backgroundImage from '../assets/img/cultivasena.png';
 const router = useRouter();
 const authStore = useAuthStore(); // Instancia de Pinia para manejar estado
 
-// Variables reactivas
+// Variables reactivas para almacenar datos del formulario
 const name = ref('');
 const type_document = ref('');
 const document = ref('');
@@ -127,10 +126,13 @@ const confirmPassword = ref('');
 const errorMessage = ref('');
 const loading = ref(false);
 
-// Función para registrar un usuario
+/**
+ * Función para registrar un usuario en el sistema.
+ * Se validan los campos, se envía la solicitud a la API y se maneja la respuesta.
+ */
 const registerUser = async () => {
-  // Validaciones previas
-  if (!name.value || !type_document.value || !document.value || !email.value || !password.value || !confirmPassword.value) {
+  // Validaciones previas para evitar solicitudes innecesarias
+  if (!name.value || !type_document.value || !document.value || !password.value || !confirmPassword.value) {
     errorMessage.value = 'Por favor completa todos los campos obligatorios.';
     return;
   }
@@ -140,10 +142,11 @@ const registerUser = async () => {
     return;
   }
 
-  loading.value = true;
+  loading.value = true; // Activar el estado de carga
   errorMessage.value = '';
 
   try {
+    // Envío de datos al backend
     const response = await axios.post('http://127.0.0.1:8000/api/register', {
       name: name.value.trim(),
       type_document: type_document.value.trim(),
@@ -153,10 +156,10 @@ const registerUser = async () => {
       password_confirmation: confirmPassword.value.trim(),
     });
 
-    // Si se recibe el token correctamente
+    // Si se recibe un token, el usuario ha sido registrado con éxito
     if (response.data.access_token) {
-      authStore.setTokens(response.data.access_token);
-
+      authStore.setTokens(response.data.access_token); // Guardar token en Pinia
+      
       Swal.fire({
         title: 'Registro Exitoso',
         text: `Bienvenido, ${name.value}! Revisa tu correo para confirmar tu cuenta.`,
@@ -170,25 +173,20 @@ const registerUser = async () => {
     }
   } catch (error) {
     console.error('Error en el registro:', error.response?.data || error.message);
-
+    
+    // Manejo de errores de validación provenientes del backend
     if (error.response && error.response.data.errors) {
       const errors = error.response.data.errors;
       errorMessage.value = '';
 
-      if (errors.document) {
-        errorMessage.value += `Documento: ${errors.document[0]} `;
-      }
-      if (errors.email) {
-        errorMessage.value += `Correo: ${errors.email[0]} `;
-      }
-      if (errors.password) {
-        errorMessage.value += `Contraseña: ${errors.password[0]} `;
-      }
+      if (errors.document) errorMessage.value += `Documento: ${errors.document[0]} `;
+      if (errors.email) errorMessage.value += `Correo: ${errors.email[0]} `;
+      if (errors.password) errorMessage.value += `Contraseña: ${errors.password[0]} `;
     } else {
       errorMessage.value = 'Error en el registro. Intenta de nuevo.';
     }
   } finally {
-    loading.value = false;
+    loading.value = false; // Desactivar estado de carga
   }
 };
 </script>
