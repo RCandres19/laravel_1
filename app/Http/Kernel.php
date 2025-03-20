@@ -42,5 +42,6 @@ class Kernel extends HttpKernel
         'auth'          => \App\Http\Middleware\Authenticate::class, // Middleware de autenticación estándar de Laravel con JWT
         'throttle'      => \Illuminate\Routing\Middleware\ThrottleRequests::class, // Limita solicitudes por usuario para evitar abuso
         'refresh.token' => \App\Http\Middleware\RefreshTokenMiddleware::class, // Middleware para refrescar tokens JWT automáticamente
+        'role'          => \App\Http\Middleware\RoleMiddleware::class, //Middleware para definir los roles
     ];
 }

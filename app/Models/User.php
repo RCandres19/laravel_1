@@ -4,15 +4,17 @@ namespace App\Models;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Auth\Passwords\CanResetPassword; // 📌 Agregar esto
-use Tymon\JWTAuth\Contracts\JWTSubject;
+use Illuminate\Auth\Passwords\CanResetPassword;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Notifications\Notifiable;
+use Tymon\JWTAuth\Contracts\JWTSubject;
 use App\Notifications\VerifyEmailNotification;
+
 
 
 class User extends Authenticatable implements JWTSubject, MustVerifyEmail //  Implementar MustVerifyEmail
 {
-    use HasFactory, CanResetPassword; //  Agregar el trait
+    use HasFactory, CanResetPassword, Notifiable; //  Agregar el trait
 
     protected $fillable = ['name', 'type_document', 'document', 'email', 'password', 'role']; //  Agregar role y password
 
@@ -33,6 +35,11 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail //  Im
     public function isAdmin()
     {
         return $this->role === 'admin';
+    }
+
+    public function isUser()
+    {
+        return $this->role === 'user';
     }
 
     // Métodos relacionados con la verificación de correo electrónico

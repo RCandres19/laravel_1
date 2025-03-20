@@ -11,7 +11,7 @@ import { defineStore } from "pinia";
 export const useUserStore = defineStore("user", {
   // Definición del estado del store
   state: () => ({
-    userName: "", // Variable reactiva que almacena el nombre del usuario
+    userName: sessionStorage.getItem("userName") || "", // Cargar desde sessionStorage
   }),
 
   // Métodos (acciones) que modifican el estado
@@ -25,7 +25,23 @@ export const useUserStore = defineStore("user", {
       // Verifica que el nombre no sea vacío y sea un string antes de asignarlo
       if (name && typeof name === "string") {
         this.userName = name.trim(); // Elimina espacios en blanco adicionales
+        sessionStorage.setItem("userName", this.userName);
       }
+    },
+
+    /**
+     * Carga el usuario almacenado en sessionStorage al iniciar la app.
+     */
+    loadUserFromStorage() {
+      this.userName = sessionStorage.getItem("userName") || "";
+    },
+
+    /**
+     * Borra el usuario al cerrar sesión.
+     */
+    clearUser() {
+      this.userName = "";
+      sessionStorage.removeItem("userName");
     },
   },
 });

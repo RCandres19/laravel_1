@@ -1,30 +1,28 @@
-// Importamos Axios para realizar peticiones HTTP
 import axios from "axios";
 import { useAuthStore } from "../store/AuthStore";
 
-// Configuración de Axios con la URL base de la API y encabezados predeterminados
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || "http://127.0.0.1:8000/api", // Usa la variable de entorno o una URL por defecto
+  baseURL: import.meta.env.VITE_API_URL || "http://127.0.0.1:8000/api",
   headers: {
     "Content-Type": "application/json",
     Accept: "application/json",
   },
-  withCredentials: true, // Permite el uso de cookies en las peticiones (útil para sesiones o refresh tokens)
+  withCredentials: true, // Para manejar las cookies (refresh token)
 });
 
-/**
- * Servicio de autenticación que maneja el inicio de sesión, cierre de sesión y renovación de tokens.
- */
 const AuthService = {
   /**
    * Inicia sesión con las credenciales proporcionadas.
-   * @param {Object} credentials - Credenciales del usuario ({ name, document, password }).
-   * @returns {Promise<Object>} - Retorna un objeto con el `access_token` y `refresh_token`.
-   * @throws {Error} - Lanza un error si la autenticación falla.
    */
   async login(credentials) {
     try {
       const response = await api.post("/login", credentials);
+      const { access_token, refresh_token, user } = response.data;
+
+      const authStore = useAuthStore();
+      authStore.setTokens(access_token, refresh_token);
+      authStore.setUserRole(user.role); // Guardamos el rol en Pinia
+
       return response.data;
     } catch (error) {
       console.error("Error en el login:", error.response?.data || error.message);
@@ -33,15 +31,34 @@ const AuthService = {
   },
 
   /**
-   * Solicita un nuevo token de acceso usando el refresh token.
-   * @param {string} refreshToken - Token de actualización del usuario.
-   * @returns {Promise<string>} - Retorna un nuevo `access_token`.
-   * @throws {Error} - Lanza un error si la renovación del token falla.
+   * Obtiene los datos del usuario autenticado.
    */
-  async refreshToken(refreshToken) {
+  async getUserData() {
     try {
+      const response = await api.get("/me");
+      return response.data;
+    } catch (error) {
+      console.error("Error al obtener datos del usuario:", error);
+      throw error;
+    }
+  },
+
+  /**
+   * Refresca el token de acceso.
+   */
+  async refreshToken() {
+    try {
+      const authStore = useAuthStore();
+      const refreshToken = authStore.refreshToken;
+
+      if (!refreshToken) throw new Error("No hay refresh token disponible.");
+
       const response = await api.post("/refreshToken", { refresh_token: refreshToken });
-      return response.data.access_token;
+      const newAccessToken = response.data.access_token;
+
+      authStore.setTokens(newAccessToken, refreshToken);
+
+      return newAccessToken;
     } catch (error) {
       console.error("Error al refrescar el token:", error);
       throw error;
@@ -49,13 +66,13 @@ const AuthService = {
   },
 
   /**
-   * Cierra la sesión del usuario eliminando la sesión en el servidor.
-   * @returns {Promise<void>} - No retorna datos, solo ejecuta la petición.
-   * @throws {Error} - Lanza un error si el logout falla.
+   * Cierra sesión eliminando los tokens.
    */
   async logout() {
     try {
-      await api.post("/logout", {}, { withCredentials: true }); // Enviamos solo la cookie
+      await api.post("/logout");
+      const authStore = useAuthStore();
+      authStore.clearTokens();
     } catch (error) {
       console.error("Error en el logout:", error);
       throw error;
@@ -63,7 +80,7 @@ const AuthService = {
   },
 };
 
-// Interceptor para agregar el token de autenticación a cada petición
+// Agregar el token en cada petición
 api.interceptors.request.use(
   (config) => {
     const authStore = useAuthStore();

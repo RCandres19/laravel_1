@@ -1,41 +1,45 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\BoletinController;
+use App\Http\Controllers\InformacionController;
 use App\Http\Controllers\UserController;
 
 /**
  *  Rutas protegidas con middleware JWT ('jwt.auth')
- * - Requieren un token JWT válido para acceder.
  */
 Route::middleware(['jwt.auth'])->group(function () {
-    //  Obtener datos del usuario autenticado
-    Route::get('/me', [AuthController::class, 'me']);
-
-    //  Gestión de usuarios (CRUD)
-    Route::prefix('/users')->group(function () {
-        Route::get('/', [UserController::class, 'index']);   // Obtener todos los usuarios
-        Route::post('/', [UserController::class, 'store']);  // Crear usuario
-        Route::get('/{id}', [UserController::class, 'show']); // Obtener usuario por ID
-        Route::put('/{id}', [UserController::class, 'update']); // Actualizar usuario
-        Route::delete('/{id}', [UserController::class, 'destroy']); // Eliminar usuario
+    // Rutas para administradores
+    Route::middleware('role:admin')->group(function () {
+        Route::get('/admin/dashboard', [AdminController::class, 'index']);
+        Route::apiResource('/admin/informacion', InformacionController::class);
+        Route::apiResource('/admin/boletines', BoletinController::class);
     });
+
+    // Rutas para usuarios normales
+    Route::middleware('role:user')->group(function () {
+        Route::get('/user/dashboard', [UserController::class, 'index']);
+    });
+
+    // Obtener datos del usuario autenticado
+    Route::get('/me', [AuthController::class, 'me']);
 });
 
 /**
- *  Rutas de autenticación (accesibles sin autenticación previa)
+ *  Rutas de autenticación (públicas)
  */
-Route::post('/register', [AuthController::class, 'register']); // Registro de usuario
-Route::post('/login', [AuthController::class, 'login']); // Iniciar sesión
+Route::post('/register', [AuthController::class, 'register']);
+Route::post('/login', [AuthController::class, 'login']);
 
 /**
- *  Refrescar el token de autenticación
- * - Se usa una cookie httpOnly para el Refresh Token.
+ *  Refrescar token
  */
 Route::post('/refreshToken', [AuthController::class, 'refreshToken'])->middleware('jwt.refresh');
 
 /**
- *  Cerrar sesión y revocar el token JWT.
+ *  Cerrar sesión
  */
 Route::post('/logout', [AuthController::class, 'logout']);
 

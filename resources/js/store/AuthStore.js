@@ -1,102 +1,103 @@
 // Importamos `defineStore` de Pinia para gestionar el estado global
 import { defineStore } from "pinia";
 import AuthService from "../services/AuthService"; // Importamos el servicio de autenticación
+import { useUserStore } from "./userStore"; // Importamos el store del usuario
 
-/**
- * Store de autenticación para gestionar los tokens de acceso y refresh.
- *
- * @property {string|null} accessToken - Token de acceso del usuario, almacenado en `sessionStorage`.
- * @property {string|null} refreshToken - Token de actualización del usuario, almacenado en `sessionStorage`.
- *
- * @method setTokens(accessToken, refreshToken) - Almacena los tokens en el estado y en `sessionStorage`.
- * @method clearTokens() - Elimina los tokens del estado y del almacenamiento de sesión.
- * @method login(credentials) - Realiza la autenticación y almacena los tokens obtenidos.
- * @method refreshToken() - Solicita un nuevo token de acceso usando el `refreshToken`.
- * @method logout() - Cierra sesión eliminando los tokens y notificando al servidor.
- */
 export const useAuthStore = defineStore("auth", {
-  // Estado inicial del store
   state: () => ({
-    accessToken: sessionStorage.getItem("accessToken") || null, // Carga el token de acceso desde sessionStorage
-    refreshToken: sessionStorage.getItem("refreshToken") || null, // Carga el refresh token desde sessionStorage
+    accessToken: sessionStorage.getItem("accessToken") || null,
+    refreshToken: sessionStorage.getItem("refreshToken") || null,
+    role: sessionStorage.getItem("role") || null, // Ahora almacenamos el rol del usuario
   }),
 
-  // Métodos que modifican el estado
   actions: {
     /**
      * Almacena los tokens en el estado y en `sessionStorage`.
-     * 
-     * @param {string} accessToken - Token de acceso recibido tras autenticación.
-     * @param {string} refreshToken - Token de actualización recibido tras autenticación.
      */
     setTokens(accessToken, refreshToken) {
       this.accessToken = accessToken;
       this.refreshToken = refreshToken;
-
       sessionStorage.setItem("accessToken", accessToken);
       sessionStorage.setItem("refreshToken", refreshToken);
     },
 
     /**
-     * Elimina los tokens del estado y del almacenamiento de sesión.
+     * Guarda el rol del usuario en el estado y `sessionStorage`.
+     */
+    setUserRole(role) {
+      this.role = role;
+      sessionStorage.setItem("role", role);
+    },
+
+    /**
+     * Borra los tokens y el rol del usuario.
      */
     clearTokens() {
       this.accessToken = null;
       this.refreshToken = null;
+      this.role = null;
       sessionStorage.removeItem("accessToken");
       sessionStorage.removeItem("refreshToken");
+      sessionStorage.removeItem("role");
     },
 
     /**
-     * Inicia sesión con las credenciales del usuario.
-     * 
-     * @param {Object} credentials - Datos de inicio de sesión (ej. { name, document, password }).
-     * @returns {boolean} Retorna `true` si la autenticación es exitosa.
-     * @throws {Error} Lanza un error si las credenciales son incorrectas o la API falla.
+     * Inicia sesión con credenciales y almacena los tokens y el rol.
      */
     async login(credentials) {
       try {
-        // Llamada a la API para autenticación
-        const { access_token, refresh_token } = await AuthService.login(credentials);
+        const { access_token, refresh_token, user } = await AuthService.login(credentials);
         this.setTokens(access_token, refresh_token);
-        return true;
+        this.setUserRole(user.role); // Guardamos el rol del usuario
+
+        //Guarda el nombre de usuario en userStore
+        const userStore = useUserStore();
+        userStore.setUserName(user.name);
+
+        return user.role; // Devolvemos el rol para redirigirlo en Vue
       } catch (error) {
         throw error;
       }
     },
 
     /**
-     * Solicita un nuevo token de acceso usando el `refreshToken`.
-     * 
-     * @returns {string} Retorna el nuevo token de acceso si la operación es exitosa.
-     * @throws {Error} Si el `refreshToken` no está disponible o la solicitud falla.
+     * Refresca el token de acceso.
      */
     async refreshToken() {
       try {
         if (!this.refreshToken) throw new Error("No hay refresh token disponible.");
-
-        // Solicita un nuevo token de acceso a la API
         const newAccessToken = await AuthService.refreshToken(this.refreshToken);
         this.setTokens(newAccessToken, this.refreshToken);
         return newAccessToken;
       } catch (error) {
-        this.clearTokens(); // Si hay un error, eliminamos los tokens y forzamos cierre de sesión
+        this.clearTokens();
         throw error;
       }
     },
 
     /**
-     * Cierra sesión eliminando los tokens y notificando al servidor.
+     * Cierra sesión y borra los tokens.
      */
     async logout() {
       try {
-        if (!this.refreshToken) return; // Si no hay refresh token, no se necesita cerrar sesión en el servidor
+        await AuthService.logout();
+        this.clearTokens();
 
-        await AuthService.logout(this.refreshToken); // Notifica al backend que el usuario cierra sesión
-        this.clearTokens(); // Borra los tokens del cliente
+        //Limpiar también el userStore
+        const userStore = useUserStore();
+        userStore.clearUser();
       } catch (error) {
         console.error("Error al cerrar sesión:", error);
       }
+    },
+
+    /**
+     * Carga los datos del usuario desde sessionStorage
+     */
+    loadUserFromStorage() {
+      this.accessToken = sessionStorage.getItem("accessToken");
+      this.refreshToken = sessionStorage.getItem("refreshToken");
+      this.role = sessionStorage.getItem("role");
     },
   },
 });

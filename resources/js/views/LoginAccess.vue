@@ -13,16 +13,6 @@
 
       <!-- Formulario de inicio de sesión -->
       <form @submit.prevent="login">
-        <!-- Campo de nombre -->
-        <input 
-          v-model.trim="name"
-          id="name"
-          name="name" 
-          placeholder="Nombre" 
-          class="w-full mt-3 p-2 rounded bg-white bg-opacity-50 focus:ring-2 focus:ring-green-500" 
-          required
-        />
-        
         <!-- Campo de documento -->
         <input 
           v-model.trim="document"
@@ -74,61 +64,59 @@
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 import Swal from "sweetalert2";
-import { useAuthStore } from "../store/AuthStore"; // Importando Pinia Store
+import { useAuthStore } from "../store/AuthStore";
 import backgroundImage from "../assets/img/cultivasena.png";
 
 const router = useRouter();
-const authStore = useAuthStore(); // Instancia de Pinia para manejar autenticación
+const authStore = useAuthStore();
 
-// Variables reactivas para almacenar los datos del formulario
-const name = ref(""); // Nombre del usuario
-const document = ref(""); // Documento del usuario
-const password = ref(""); // Contraseña del usuario
-const errorMessage = ref(""); // Mensaje de error en caso de fallo en el login
-const loading = ref(false); // Estado de carga para evitar múltiples envíos
+const document = ref("");
+const password = ref("");
+const errorMessage = ref("");
+const loading = ref(false);
 
-/**
- * Función para manejar el inicio de sesión del usuario
- * - Verifica que los campos no estén vacíos
- * - Realiza la solicitud de autenticación a través de Pinia
- * - Si el login es exitoso, almacena el token y redirige al usuario
- */
 const login = async () => {
-  // Validar que todos los campos estén completos
-  if (!name.value || !document.value || !password.value) {
+  if (!document.value || !password.value) {
     errorMessage.value = "Por favor ingrese todos los campos.";
     return;
   }
 
-  loading.value = true; // Activar estado de carga
-  errorMessage.value = ""; // Limpiar mensaje de error previo
+  loading.value = true;
+  errorMessage.value = "";
 
   try {
-    // Llamada al login con los datos ingresados
+    // Realiza el login y obtiene los tokens
     await authStore.login({
-      name: name.value.trim(),
       document: document.value.trim(),
       password: password.value.trim(),
     });
 
-    // Mostrar alerta de éxito
+    // Ahora obtenemos el rol del usuario desde la API
+    const userData = await authStore.getUserData(); // Asegúrate de que este método esté en AuthService
+    const role = userData.role; // Obtiene el rol desde la respuesta de la API
+    const userName = userData.name; // Ahora sí, obtener el nombre real
+
+    if (!role) {
+      throw new Error("No se pudo obtener el rol del usuario.");
+    }
+
+    authStore.setUserRole(role); // Guardamos el rol en Pinia
+
+    // Mostramos mensaje de éxito
     Swal.fire({
       title: "Ingreso Exitoso",
-      text: `Bienvenido, ${name.value}!`,
+      text: `Bienvenido, ${userName}!`,
       icon: "success",
       confirmButtonColor: "#38af3e",
     });
 
-    // Redirigir al usuario a la página de bienvenida
-    router.push("/welcome");
+    // Redirigir según el rol
+    router.push(role === "admin" ? "/admin/informacion" : "/welcome");
   } catch (error) {
-    console.log("Auth Store:", authStore); // Verifica si el AuthStore se está utilizando correctamente
-    
-    // Manejo de error si las credenciales son incorrectas o si la cuenta no está verificada
-    errorMessage.value = error.response?.data?.message || "Credenciales incorrectas o cuenta no verificada.";
-    console.error("Error en el login:", error.response?.data || error.message);
+    errorMessage.value = error?.response?.data?.message ?? "Error en la autenticación.";
+    console.error("Error en el login:", error);
   } finally {
-    loading.value = false; // Desactivar estado de carga
+    loading.value = false;
   }
 };
 </script>

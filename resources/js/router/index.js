@@ -28,7 +28,7 @@ const routes = [
   { path: "/login", component: LoginAccess, meta: { requiresGuest: true } },
   { path: "/register", component: RegisterUsers, meta: { requiresGuest: true } },
   { path: "/welcome", component: WelcomeUsers, meta: { requiresAuth: true } },
-
+  
   // Secciones de información y servicios
   { path: "/cultivos", component: CultivosInfo, meta: { requiresAuth: true } },
   { path: "/noticias", component: NoticiasInfo, meta: { requiresAuth: true } },
@@ -62,7 +62,7 @@ router.beforeEach((to, from, next) => {
   //  Si la ruta es solo para invitados y el usuario ya está autenticado, redirigir a welcome
   } else if (to.meta.requiresGuest && token) {
     next({ path: "/welcome" });
-
+  
   //  Si no hay restricciones, continuar con la navegación
   } else {
     next();
