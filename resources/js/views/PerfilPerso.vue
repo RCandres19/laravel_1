@@ -40,9 +40,11 @@
 </template>
 
 <script setup>
+import { storeToRefs } from 'pinia';
 import { ref, onMounted } from 'vue';
 import MenuPages from '../components/MenuPages.vue';
 import AuthService from '../services/AuthService';
+import { useAuthStore } from '../store/AuthStore';
 
 // Variables reactivas para almacenar el estado del usuario, carga y errores
 const user = ref({}); // Almacena los datos del usuario
@@ -66,6 +68,9 @@ const cargarPerfil = async () => {
     cargando.value = false; // Oculta el mensaje de carga
   }
 };
+
+const { role } = storeToRefs(useAuthStore()); // Extraer role u otros datos
+console.log(role.value);
 
 /**
  * Función para manejar la edición del perfil.
