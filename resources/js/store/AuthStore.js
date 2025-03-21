@@ -15,18 +15,24 @@ export const useAuthStore = defineStore("auth", {
      * Almacena los tokens en el estado y en `sessionStorage`.
      */
     setTokens(accessToken, refreshToken) {
-      this.accessToken = accessToken;
+      if (accessToken) {
+        this.accessToken = accessToken;
+        sessionStorage.setItem("accessToken", accessToken);
+      }
+     if (refreshToken) {
       this.refreshToken = refreshToken;
-      sessionStorage.setItem("accessToken", accessToken);
       sessionStorage.setItem("refreshToken", refreshToken);
+     }
     },
 
     /**
      * Guarda el rol del usuario en el estado y `sessionStorage`.
      */
     setUserRole(role) {
-      this.role = role;
+      if (role) {
+        this.role = role;
       sessionStorage.setItem("role", role);
+      }
     },
 
     /**
@@ -46,16 +52,24 @@ export const useAuthStore = defineStore("auth", {
      */
     async login(credentials) {
       try {
-        const { access_token, refresh_token, user } = await AuthService.login(credentials);
+        const response = await AuthService.login(credentials);
+          if (!response ?? !response.access_Token ?? !response.user) {
+            throw new Error ("Respuesta de autenticación inválida.");
+          }
+
+        const { access_token, refresh_token, user } = response;
+
         this.setTokens(access_token, refresh_token);
         this.setUserRole(user.role); // Guardamos el rol del usuario
 
         //Guarda el nombre de usuario en userStore
         const userStore = useUserStore();
-        userStore.setUserName(user.name);
-
+          if (user.name) {
+            userStore.setUserName(user.name);
+          }
         return user.role; // Devolvemos el rol para redirigirlo en Vue
       } catch (error) {
+        console.error("Error en el login:", error);
         throw error;
       }
     },
@@ -66,7 +80,7 @@ export const useAuthStore = defineStore("auth", {
     async refreshToken() {
       try {
         if (!this.refreshToken) throw new Error("No hay refresh token disponible.");
-        const newAccessToken = await AuthService.refreshToken(this.refreshToken);
+        const newAccessToken = await AuthService.refreshToken();
         this.setTokens(newAccessToken, this.refreshToken);
         return newAccessToken;
       } catch (error) {
@@ -85,7 +99,9 @@ export const useAuthStore = defineStore("auth", {
 
         //Limpiar también el userStore
         const userStore = useUserStore();
-        userStore.clearUser();
+        if (userStore.clearUser) {
+          userStore.clearUser();
+        }
       } catch (error) {
         console.error("Error al cerrar sesión:", error);
       }
