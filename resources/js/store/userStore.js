@@ -1,47 +1,45 @@
 // Importa la función `defineStore` de Pinia para definir un store de estado global
 import { defineStore } from "pinia";
 
-/**
- * Store de usuario utilizando Pinia.
- * 
- * @property {string} userName - Nombre del usuario almacenado en el estado global.
- * 
- * @method setUserName(name) - Establece el nombre del usuario, validando que sea un string.
- */
 export const useUserStore = defineStore("user", {
-  // Definición del estado del store
   state: () => ({
-    userName: sessionStorage.getItem("userName") || "", // Cargar desde sessionStorage
+    user: JSON.parse(sessionStorage.getItem("user")) || null, // Cargar el usuario completo
   }),
 
-  // Métodos (acciones) que modifican el estado
   actions: {
     /**
-     * Asigna un nombre de usuario al estado global.
+     * Asigna un objeto de usuario al estado global y lo almacena en sessionStorage.
      * 
-     * @param {string} name - Nombre del usuario a almacenar.
+     * @param {Object} user - Datos del usuario (nombre, correo, etc.).
      */
-    setUserName(name) {
-      // Verifica que el nombre no sea vacío y sea un string antes de asignarlo
-      if (name && typeof name === "string") {
-        this.userName = name.trim(); // Elimina espacios en blanco adicionales
-        sessionStorage.setItem("userName", this.userName);
+    setUser(user) {
+      if (user && typeof user === "object") {
+        this.user = user;
+        sessionStorage.setItem("user", JSON.stringify(user));
       }
     },
 
     /**
-     * Carga el usuario almacenado en sessionStorage al iniciar la app.
+     * Carga los datos del usuario desde sessionStorage al iniciar la app.
      */
     loadUserFromStorage() {
-      this.userName = sessionStorage.getItem("userName") || "";
+      const storedUser = sessionStorage.getItem("user");
+      this.user = storedUser ? JSON.parse(storedUser) : null;
     },
 
     /**
      * Borra el usuario al cerrar sesión.
      */
     clearUser() {
-      this.userName = "";
-      sessionStorage.removeItem("userName");
+      this.user = null;
+      sessionStorage.removeItem("user");
     },
+  },
+
+  getters: {
+    /**
+     * Devuelve el nombre del usuario si está disponible.
+     */
+    userName: (state) => state.user?.name || "",
   },
 });
